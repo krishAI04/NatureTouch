@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+---
+<Base title="Not found" description="This page doesn't exist on the Nature Touch site.">
+  <div class="nf">
+    <PageHead title="This path isn't planted yet" lede="The page you were after has moved or never existed. The gardens are this way.">
+      <div class="nf__go">
+        <a class="btn" href="/projects/">See the projects</a>
+        <a class="link" href="/">Home page</a>
+      </div>
+    </PageHead>
+  </div>
+</Base>
+
+<style>
+  .nf { min-height: 80svh; display: grid; align-content: center; }
+  .nf__go { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-top: 28px; }
+</style>

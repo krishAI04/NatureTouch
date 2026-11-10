@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectTile from '../../components/project/ProjectTile.astro';
+import ProjectIndex from '../../components/home/ProjectIndex.astro';
+import { projects } from '../../content/site';
+import { wing } from '../../lib/ornament';
+import Closing from '../../components/home/Closing.astro';
+---
+<Base title="Projects" description="Landscape projects by Nature Touch: farmhouses, townships and public gardens across Raipur and Naya Raipur." og="projects">
+  <section class="pi wrap" aria-labelledby="pi-title">
+    <header class="pi__head">
+      <h1 id="pi-title">Gardens we have built</h1>
+      <div class="pi__rule" aria-hidden="true"><span set:html={wing} /></div>
+      <p>Nine gardens, photographed. Farmhouses, townships and the city's public spaces, each drawn by our architects and built by our own teams.</p>
+    </header>
+    <ul class="pi__grid">
+      {projects.map((p, i) => <li><ProjectTile project={p} n={i + 1} total={projects.length} /></li>)}
+    </ul>
+  </section>
+  <ProjectIndex />
+  <Closing />
+</Base>
+
+<style>
+  .pi { padding-block: calc(var(--bar-h) + clamp(48px, 9vh, 96px)) clamp(72px, 11vh, 128px); }
+  .pi__head { max-width: 46rem; margin-bottom: clamp(32px, 6vh, 64px); }
+  h1 { font-size: var(--step-4); }
+  .pi__rule { width: clamp(140px, 15vw, 200px); margin-top: 14px; color: #d08a63; }
+  .pi__rule :global(svg) { display: block; width: 100%; height: auto; }
+  .pi__head p { margin-top: 18px; max-width: 48ch; color: color-mix(in srgb, var(--marble) 84%, transparent); }
+  .pi__grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); }
+  /* a gentle stagger, like bays of an arcade */
+  .pi__grid li:nth-child(3n + 2) { transform: translateY(clamp(24px, 5vh, 56px)); }
+  @media (max-width: 1099px) { .pi__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pi__grid li:nth-child(3n + 2) { transform: none; } .pi__grid li:nth-child(even) { transform: translateY(40px); } .pi__grid { padding-bottom: 40px; } }
+  @media (max-width: 699px) { .pi__grid { grid-template-columns: 1fr; padding-bottom: 0; } .pi__grid li:nth-child(even) { transform: none; } }
+</style>

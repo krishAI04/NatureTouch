@@ -1,0 +1,44 @@
+---
+// One plant set in a marble niche with a sandstone arch frame, its common and Latin names below.
+import { Image } from 'astro:assets';
+import archUrl from '../assets/svg/arch.svg?url';
+import marble from '../assets/textures/marble-sm.jpg';
+const cut = import.meta.glob<{ default: ImageMetadata }>('../assets/plants/*.png', { eager: true });
+interface Props { n: string; name: string; latin: string; sizes?: string }
+const { n, name, latin, sizes = '(min-width: 900px) 14vw, 40vw' } = Astro.props;
+const src = cut[`../assets/plants/${n}.png`].default;
+---
+<figure class="niche" style={`--arch:url("${archUrl}");--marble-tex:url("${marble.src}")`}>
+  <div class="niche__frame">
+    <div class="niche__inner">
+      <Image src={src} alt={`${name} in a pot, from the Nature Care nursery`} widths={[240, 420]} sizes={sizes} class="niche__plant" loading="lazy" />
+    </div>
+  </div>
+  <figcaption>
+    <span class="niche__name">{name}</span>
+    <span class="niche__latin" lang="la">{latin}</span>
+  </figcaption>
+</figure>
+
+<style>
+  .niche { margin: 0; text-align: center; }
+  /* a sandstone arch frame around a marble recess, shaded at the top like real depth */
+  .niche__frame {
+    aspect-ratio: 100 / 150; padding: 5px; background: #c46a50;
+    -webkit-mask-image: var(--arch); mask-image: var(--arch);
+    -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  }
+  .niche__inner {
+    position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; padding: 0 10% 9%;
+    background-color: var(--marble); background-image: linear-gradient(to bottom, rgb(40 20 12 / 0.22), transparent 38%), var(--marble-tex);
+    background-size: auto, 260px; background-position: center;
+    -webkit-mask-image: var(--arch); mask-image: var(--arch);
+    -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  }
+  /* a thin sandstone ledge the pot stands on */
+  .niche__inner::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 9%; background: linear-gradient(#d9cfc4, #c9bcae); border-top: 1px solid rgb(168 69 47 / 0.5); }
+  .niche__plant { position: relative; z-index: 1; width: 100%; max-height: 74%; height: auto; object-fit: contain; filter: drop-shadow(0 8px 10px rgb(40 20 12 / 0.28)); }
+  figcaption { display: grid; gap: 2px; margin-top: 14px; }
+  .niche__name { font: 400 var(--step-0)/1.2 var(--display); }
+  .niche__latin { font-size: var(--step--1); font-style: italic; color: #e9b98f; }
+</style>

@@ -1,0 +1,20 @@
+---
+// The opening of an inner page: a large title, the flourish, one short paragraph. Plenty of air above and below.
+import { wing } from '../lib/ornament';
+interface Props { title: string; lede: string; id?: string }
+const { title, lede, id = 'page-title' } = Astro.props;
+---
+<header class="ph wrap">
+  <h1 id={id}>{title}</h1>
+  <div class="ph__rule" aria-hidden="true"><span set:html={wing} /></div>
+  <p class="ph__lede">{lede}</p>
+  <slot />
+</header>
+
+<style>
+  .ph { padding-block: calc(var(--bar-h) + clamp(56px, 11vh, 120px)) clamp(48px, 8vh, 88px); }
+  h1 { font-size: var(--step-4); max-width: 14ch; }
+  .ph__rule { width: clamp(140px, 15vw, 200px); margin-top: 16px; color: #d08a63; }
+  .ph__rule :global(svg) { display: block; width: 100%; height: auto; }
+  .ph__lede { margin-top: 20px; max-width: 50ch; font-size: var(--step-0); color: color-mix(in srgb, var(--marble) 84%, transparent); }
+</style>

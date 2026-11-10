@@ -1,0 +1,135 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import SiteWalk from '../../components/project/SiteWalk.astro';
+import ProjectFilm from '../../components/project/ProjectFilm.astro';
+import { projects, plantsByType, type Project } from '../../content/site';
+import { photosOf, heroOf, keyOf } from '../../lib/project-photos';
+import { photoAlt } from '../../content/photo-alt';
+import { wing, arrow } from '../../lib/ornament';
+import Closing from '../../components/home/Closing.astro';
+
+export function getStaticPaths() {
+  return projects.map((p, i) => ({ params: { slug: p.slug }, props: { project: p, next: projects[(i + 1) % projects.length] } }));
+}
+interface Props { project: Project; next: Project }
+const { project: p, next } = Astro.props;
+const photos = photosOf(p.slug);
+const hero = heroOf(p.slug);
+const nextCover = heroOf(next.slug);
+// the walk: every photo but the hero, small ones dropped when there are enough sharp ones, at most five
+const rest = photos.filter((ph) => ph !== hero);
+const sharp = rest.filter((ph) => ph.height >= 560);
+const walk = (sharp.length >= 2 ? sharp : rest).slice(0, 5);
+const plants = plantsByType[p.type] ?? plantsByType.Residential;
+const facts = [
+  { k: 'Type', v: p.type },
+  { k: 'Location', v: p.place },
+  { k: 'Completed', v: p.year },
+  { k: 'Area', v: p.area },
+];
+---
+<Base title={p.name} description={`${p.name}: ${p.type.toLowerCase()} landscape in ${p.place} by Nature Touch. ${p.story}`} og={`project-${p.slug}`}>
+  <section class="cs-hero" data-dark-hero aria-labelledby="cs-title">
+    <Image src={hero} alt={photoAlt[keyOf(hero)] ?? `${p.name}, ${p.type.toLowerCase()} garden in ${p.place}`} widths={[960, 1440, 1920, 2400]} sizes="100vw" class="cs-hero__img" loading="eager" fetchpriority="high" quality={72} style={`view-transition-name: p-${p.slug}; view-transition-class: proj`} />
+    <div class="cs-hero__text wrap">
+      <p class="cs-hero__eyebrow"><a href="/projects/">Projects</a> · {p.type}</p>
+      <h1 id="cs-title">{p.name}</h1>
+      <div class="cs-hero__flourish" aria-hidden="true"><span set:html={wing} class="l" /><i></i><span set:html={wing} /></div>
+      <p class="cs-hero__place">{p.place}</p>
+    </div>
+  </section>
+
+  <section class="cs-facts" aria-label="Project facts">
+    <dl class="wrap cs-facts__row">
+      {facts.map((f) => <div><dt>{f.k}</dt><dd>{f.v}</dd></div>)}
+    </dl>
+  </section>
+
+  <section class="cs-story wrap" aria-labelledby="cs-story-title">
+    <h2 id="cs-story-title" class="visually-hidden">About the project</h2>
+    <p class="cs-story__lede">{p.story}</p>
+    <div class="cs-story__scope">
+      <h3>What we did</h3>
+      <ul>{p.scope.map((s) => <li>{s}</li>)}</ul>
+    </div>
+  </section>
+
+  <SiteWalk photos={walk} name={p.name} plants={plants} />
+  <ProjectFilm slug={p.slug} name={p.name} />
+
+  <a class="cs-next" href={`/projects/${next.slug}/`}>
+    <Image src={nextCover} alt="" widths={[960, 1440]} sizes="100vw" class="cs-next__img" loading="lazy" quality={60} />
+    <span class="cs-next__text wrap">
+      <span class="cs-next__eyebrow">Next project</span>
+      <span class="cs-next__name">{next.name}</span>
+      <span class="cs-next__meta">{next.type} · {next.place}</span>
+      <span class="cs-next__arrow" aria-hidden="true" set:html={arrow} />
+    </span>
+  </a>
+  <Closing />
+</Base>
+
+<style>
+  /* hero: the cover photo, grown from the tile that was tapped */
+  .cs-hero { position: relative; height: 88svh; min-height: 520px; overflow: hidden; display: flex; align-items: flex-end; }
+  .cs-hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .cs-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgb(8 24 16 / 0.94), rgb(8 24 16 / 0.6) 45%, rgb(8 24 16 / 0.25) 70%, rgb(8 24 16 / 0.8)); }
+  .cs-hero__text { position: relative; z-index: 1; text-shadow: 0 1px 14px rgb(6 20 13 / 0.7); padding-bottom: clamp(40px, 8vh, 88px); display: grid; justify-items: center; text-align: center; gap: 10px; }
+  .cs-hero__eyebrow { font-size: var(--step--1); letter-spacing: 0.02em; color: #f0d9b8; }
+  .cs-hero__eyebrow a { text-decoration: none; border-bottom: 1px solid currentColor; padding-block: 8px 2px; }
+  h1 { font-size: var(--step-4); max-width: 16ch; }
+  .cs-hero__flourish { display: flex; align-items: center; gap: 6px; color: var(--gold); }
+  .cs-hero__flourish > span { width: clamp(80px, 9vw, 120px); }
+  .cs-hero__flourish :global(svg) { display: block; width: 100%; height: auto; }
+  .cs-hero__flourish .l :global(svg) { transform: scaleX(-1); }
+  .cs-hero__flourish i { width: 7px; height: 7px; background: currentColor; transform: rotate(45deg); flex: none; }
+  .cs-hero__place { font-size: var(--step-0); color: color-mix(in srgb, var(--marble) 88%, transparent); }
+
+  /* facts: four bays separated by sandstone hairlines */
+  .cs-facts { background: var(--garden-950); border-block: 1px solid rgb(233 201 160 / 0.25); }
+  .cs-facts__row { margin-block: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .cs-facts__row div { padding: clamp(20px, 3vh, 32px) clamp(12px, 2vw, 28px); text-align: center; }
+  .cs-facts__row div + div { border-left: 1px solid rgb(233 201 160 / 0.25); }
+  dt { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: #e9b98f; }
+  dd { margin: 6px 0 0; font: 400 var(--step-1)/1.2 var(--display); }
+
+  .cs-story { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: clamp(32px, 6vw, 96px); padding-block: clamp(64px, 11vh, 128px); align-items: start; }
+  .cs-story__lede { font: 400 var(--step-2)/1.25 var(--display); max-width: 30ch; }
+  .cs-story__scope h3 { font: 400 1.3rem/1.2 var(--display); color: #e9b98f; padding-bottom: 12px; border-bottom: 1px solid rgb(233 201 160 / 0.3); }
+  .cs-story__scope ul { list-style: none; margin: 0; padding: 0; }
+  .cs-story__scope li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid color-mix(in srgb, var(--marble) 10%, transparent); }
+  .cs-story__scope li::before { content: ''; width: 6px; height: 6px; flex: none; background: #c46a50; transform: rotate(45deg); }
+
+  /* next project: the following garden waits behind a dark veil */
+  .cs-next { position: relative; display: flex; align-items: center; min-height: 60svh; overflow: hidden; text-decoration: none; border-top: var(--channel-line); }
+  .cs-next__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease-out); }
+  .cs-next::after { content: ''; position: absolute; inset: 0; background: rgb(8 24 16 / 0.76); transition: background-color 0.5s var(--ease-out); }
+  .cs-next__text { position: relative; z-index: 1; display: grid; justify-items: center; text-align: center; gap: 8px; }
+  .cs-next__eyebrow { font: 400 1.15rem/1.2 var(--display); color: #f2d2b0; }
+  .cs-next__name { font: 400 var(--step-4)/1.02 var(--display); }
+  .cs-next__meta { color: color-mix(in srgb, var(--marble) 86%, transparent); }
+  .cs-next__arrow { display: grid; place-items: center; width: 56px; height: 56px; margin-top: 12px; border-radius: 50%; border: 1px solid var(--gold); outline: 1px solid rgb(233 201 160 / 0.45); outline-offset: 3px; color: #f0d9b8; }
+  .cs-next__arrow :global(svg) { width: 28px; height: auto; }
+  @media (hover: hover) and (pointer: fine) {
+    .cs-next:hover .cs-next__img { transform: scale(1.04); }
+    .cs-next:hover::after { background: rgb(8 24 16 / 0.55); }
+  }
+
+  @media (max-width: 899px) {
+    .cs-facts__row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cs-facts__row div:nth-child(3) { border-left: 0; }
+    .cs-facts__row div:nth-child(n + 3) { border-top: 1px solid rgb(233 201 160 / 0.25); }
+    .cs-story { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { .cs-next__img, .cs-next::after { transition: none; } }
+</style>
+
+<script>
+  import { motionOK, gsap } from '../../lib/motion';
+  // browsers without cross-page view transitions still get a short settle on the hero
+  if (motionOK() && !('onpagereveal' in window)) {
+    gsap.from('.cs-hero__img', { scale: 1.08, opacity: 0, duration: 1, ease: 'power3.out' });
+    gsap.from('.cs-hero__text > *', { y: 18, opacity: 0, duration: 0.8, ease: 'power3.out', stagger: 0.08, delay: 0.15 });
+  }
+</script>

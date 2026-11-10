@@ -1,0 +1,156 @@
+---
+import Mark from './Mark.astro';
+import { wing, arrow } from '../lib/ornament';
+const numerals = ['I', 'II', 'III', 'IV'];
+const path = Astro.url.pathname;
+const links = [
+  { href: '/projects/', label: 'Projects' },
+  { href: '/services/', label: 'Services' },
+  { href: '/nursery/', label: 'Nursery' },
+  { href: '/about/', label: 'About' },
+];
+const current = (href: string) => (path.startsWith(href) ? 'page' : undefined);
+---
+<header class="bar" data-bar>
+  <a class="wordmark" href="/" aria-label="Nature Touch, home">
+    <Mark />
+    <span translate="no">Nature Touch</span>
+  </a>
+  <nav class="nav" aria-label="Main">
+    <ul>
+      {links.map((l) => <li><a href={l.href} aria-current={current(l.href)}>{l.label}</a></li>)}
+    </ul>
+    <a class="btn btn--small" href="/contact/">Discuss your site</a>
+  </nav>
+  <button class="menu-btn" type="button" aria-haspopup="dialog" aria-controls="menu" data-menu-open>
+    <span>Menu</span>
+    <Mark />
+  </button>
+</header>
+
+<dialog class="menu" id="menu" aria-label="Site menu" data-menu>
+  <div class="menu__top">
+    <a class="wordmark" href="/" aria-label="Nature Touch, home"><Mark /><span translate="no">Nature Touch</span></a>
+    <button class="menu__close" type="button" data-menu-close>Close</button>
+  </div>
+  <nav class="menu__body" aria-label="Main">
+    <div class="menu__rule" aria-hidden="true"><span set:html={wing} class="menu__wing--l" /><i></i><span set:html={wing} /></div>
+    <ul class="menu__list">
+      {links.map((l, i) => (
+        <li style={`--i:${i}`}>
+          <a href={l.href} aria-current={current(l.href)}>
+            <span class="menu__num" aria-hidden="true">{numerals[i]}</span>
+            <span class="menu__name">{l.label}</span>
+            <span class="menu__go" aria-hidden="true" set:html={arrow} />
+          </a>
+        </li>
+      ))}
+    </ul>
+    <div class="menu__rule" aria-hidden="true"><span set:html={wing} class="menu__wing--l" /><i></i><span set:html={wing} /></div>
+    <a class="btn btn--channel menu__cta" href="/contact/">Discuss your site</a>
+  </nav>
+  <div class="menu__foot">
+    <a href="tel:+919993550303">+91 999 355 0303</a>
+    <span aria-hidden="true">·</span>
+    <a href="https://wa.me/919993550303">WhatsApp</a>
+  </div>
+</dialog>
+
+<style>
+  .bar {
+    position: fixed; inset: 0 0 auto; z-index: 100; height: var(--bar-h);
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    padding: 0 var(--gutter); color: var(--marble);
+    transition: transform 0.4s var(--ease-out), background-color 0.3s var(--ease-out);
+  }
+  .bar:global(.is-solid) { background: color-mix(in srgb, var(--garden-950) 92%, transparent); }
+  .bar:global(.is-hidden) { transform: translateY(-100%); }
+  .wordmark { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; text-decoration: none; font: 400 1.35rem/1 var(--display); }
+  .nav { display: flex; align-items: center; gap: clamp(16px, 2.4vw, 40px); }
+  .nav ul { display: flex; gap: clamp(14px, 2vw, 32px); margin: 0; padding: 0; list-style: none; }
+  .nav ul a {
+    display: inline-block; padding: 12px 0; text-decoration: none; font-weight: 500; font-size: var(--step--1);
+    background: linear-gradient(var(--channel), var(--channel)) 0 calc(100% - 6px) / 0% 2px no-repeat;
+    transition: background-size 0.3s var(--ease-out);
+  }
+  .nav ul a:hover, .nav ul a[aria-current='page'] { background-size: 100% 2px; }
+  .btn--small { min-height: 44px; padding: 0 20px; }
+  .menu-btn {
+    display: none; align-items: center; gap: 10px; min-height: 44px; padding: 0 4px;
+    background: none; border: 0; color: inherit; cursor: pointer; font: 600 var(--step--1)/1 var(--text);
+  }
+  @media (max-width: 899px) {
+    .nav { display: none; }
+    .menu-btn { display: inline-flex; }
+  }
+
+  /* the menu: a centred list between two wing-and-diamond rules, like a garden gateway inscription */
+  .menu {
+    width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+    background: var(--garden-950); color: var(--marble); overscroll-behavior: contain;
+  }
+  .menu::backdrop { background: var(--garden-950); }
+  .menu[open] { display: grid; grid-template-rows: auto 1fr auto; }
+  .menu__top { display: flex; align-items: center; justify-content: space-between; height: var(--bar-h); padding: 0 var(--gutter); }
+  .menu__body { display: grid; justify-items: center; align-content: center; gap: clamp(18px, 3.5vh, 32px); padding: 0 var(--gutter); }
+  .menu__rule { display: flex; align-items: center; gap: 6px; color: var(--sandstone-soft); }
+  .menu__rule span { width: clamp(70px, 22vw, 120px); display: block; }
+  .menu__rule :global(svg) { display: block; width: 100%; height: auto; }
+  .menu__wing--l :global(svg) { transform: scaleX(-1); }
+  .menu__rule i { width: 7px; height: 7px; background: currentColor; transform: rotate(45deg); flex: none; }
+  /* each page is a full-width row: numeral, name, arrow, gold hairline below, so it reads as something to tap */
+  .menu__list { list-style: none; margin: 0; padding: 0; width: min(100%, 420px); border-top: 1px solid rgb(233 201 160 / 0.28); }
+  .menu__list li { border-bottom: 1px solid rgb(233 201 160 / 0.28); }
+  .menu__list a {
+    display: grid; grid-template-columns: 2.4em 1fr auto; align-items: center; min-height: 72px; padding: 0 6px; text-decoration: none;
+    color: var(--marble); transition: background-color 0.2s var(--ease-out);
+  }
+  .menu__num { font: 400 0.95rem/1 var(--display); color: var(--gold); }
+  .menu__name { font: 400 clamp(2rem, 9vw, 2.8rem)/1 var(--display); }
+  .menu__go { width: 30px; color: var(--gold); transition: transform 0.25s var(--ease-out); }
+  .menu__go :global(svg) { display: block; width: 100%; height: auto; }
+  .menu__list a:hover .menu__go, .menu__list a:focus-visible .menu__go { transform: translateX(4px); }
+  .menu__list a:active { background: rgb(233 201 160 / 0.08); }
+  /* the page you are on: a gold diamond in place of its numeral, and a faint wash */
+  .menu__list a[aria-current='page'] { background: rgb(233 201 160 / 0.06); }
+  .menu__list a[aria-current='page'] .menu__num { font-size: 0; }
+  .menu__list a[aria-current='page'] .menu__num::before { content: ''; display: block; width: 8px; height: 8px; background: var(--gold); transform: rotate(45deg); }
+  .menu__cta { min-height: 52px; padding: 0 28px; }
+  .menu__foot { display: flex; justify-content: center; align-items: center; gap: 14px; padding: 12px var(--gutter) 28px; color: color-mix(in srgb, var(--marble) 70%, transparent); }
+  .menu__foot a { min-height: 44px; display: inline-flex; align-items: center; color: var(--marble); }
+  .menu__close {
+    min-height: 44px; padding: 0 20px; border-radius: 999px; cursor: pointer;
+    background: none; color: inherit; border: 1px solid color-mix(in srgb, var(--marble) 40%, transparent); font: 600 var(--step--1)/1 var(--text);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    /* opened often, so it settles in about 0.4 s; closing fades out quickly instead of vanishing */
+    .menu[open] .menu__list li { animation: menu-in 0.32s var(--ease-out) both; animation-delay: calc(var(--i) * 35ms); }
+    .menu[open] .menu__rule, .menu[open] .menu__cta { animation: menu-fade 0.32s var(--ease-out) 0.12s both; }
+    .menu.is-closing { animation: menu-out 0.15s var(--ease-out) both; }
+  }
+  @keyframes menu-in { from { opacity: 0; transform: translateY(12px); } }
+  @keyframes menu-fade { from { opacity: 0; } }
+  @keyframes menu-out { to { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
+</style>
+
+<script>
+  import { initHeader, getLenis } from '../lib/motion';
+  const bar = document.querySelector<HTMLElement>('[data-bar]');
+  if (bar) initHeader(bar);
+  const dlg = document.querySelector<HTMLDialogElement>('[data-menu]');
+  const open = document.querySelector('[data-menu-open]');
+  open?.addEventListener('click', () => { dlg?.showModal(); getLenis()?.stop(); });
+  // fade out over 150 ms, then close; with reduced motion it closes at once
+  const shut = () => {
+    if (!dlg?.open || dlg.classList.contains('is-closing')) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { dlg.close(); return; }
+    dlg.classList.add('is-closing');
+    setTimeout(() => { dlg.classList.remove('is-closing'); dlg.close(); }, 150);
+  };
+  dlg?.querySelector('[data-menu-close]')?.addEventListener('click', shut);
+  dlg?.addEventListener('cancel', (e) => { e.preventDefault(); shut(); });
+  // focus goes back to the Menu button after the browser's own focus restore
+  dlg?.addEventListener('close', () => { getLenis()?.start(); setTimeout(() => (open as HTMLElement)?.focus(), 0); });
+  dlg?.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) shut(); });
+</script>

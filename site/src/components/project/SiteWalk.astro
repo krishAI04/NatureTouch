@@ -1,0 +1,98 @@
+---
+// The site walk: the project's photos travel left as you scroll while the plants used there drift right.
+// Desktop with motion: pinned horizontal scrub. Phones or reduced motion: a swipeable row.
+import { Image } from 'astro:assets';
+import { keyOf } from '../../lib/project-photos';
+import { photoAlt } from '../../content/photo-alt';
+interface Props { photos: ImageMetadata[]; name: string; plants: string[] }
+const { photos, name, plants } = Astro.props;
+---
+<section class="walk" aria-labelledby="walk-title" data-walk>
+  <div class="walk__pin" data-walk-pin>
+    <div class="wrap walk__head">
+      <h2 id="walk-title">Walk the site</h2>
+      <p class="walk__hint">{photos.length} views of {name}</p>
+    </div>
+    <ul class="walk__track" data-walk-track>
+      {photos.map((src, i) => (
+        <li class="walk__frame" style={`--ar:${src.width / src.height};--h:${src.height}px`}>
+          <Image src={src} alt={photoAlt[keyOf(src)] ?? `${name}, view ${i + 1}`} widths={[640, 960, 1280]} sizes={`(min-width: 900px) ${Math.round(560 * src.width / src.height)}px, 86vw`} quality={64} loading="lazy" class="walk__img" />
+          <span class="walk__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+        </li>
+      ))}
+    </ul>
+    <p class="walk__plants" aria-label={`Planted here: ${plants.join(', ')}`} data-walk-plants>
+      {[...plants, ...plants].map((p, i) => <span aria-hidden={i >= plants.length ? 'true' : undefined}>{p}<i></i></span>)}
+    </p>
+  </div>
+</section>
+
+<style>
+  .walk { background: var(--garden-950); border-top: var(--channel-line); }
+  .walk__pin {
+    position: relative; min-height: 100svh; display: flex; flex-direction: column; justify-content: center;
+    gap: clamp(18px, 3vh, 32px); padding-block: clamp(72px, 10vh, 110px) clamp(40px, 6vh, 64px); overflow: hidden;
+  }
+  .walk__head { display: flex; justify-content: space-between; align-items: end; gap: 16px; }
+  h2 { font-size: var(--step-3); }
+  .walk__hint { font-size: var(--step--1); color: color-mix(in srgb, var(--marble) 70%, transparent); }
+  /* the plants used here, drifting the other way under the photos */
+  .walk__plants {
+    position: relative; white-space: nowrap; margin: 0; width: max-content;
+    font: italic 400 var(--step-2)/1.1 var(--display); color: color-mix(in srgb, var(--gold) 55%, transparent);
+  }
+  .walk__plants span { display: inline-flex; align-items: center; }
+  .walk__plants i { display: inline-block; width: 0.18em; height: 0.18em; margin-inline: 0.5em; background: #c46a50; opacity: 0.6; transform: rotate(45deg); }
+  .walk__track {
+    position: relative; z-index: 1; list-style: none; margin: 0; padding: 0 var(--gutter);
+    display: flex; gap: clamp(16px, 2vw, 32px); width: max-content;
+  }
+  /* never taller than the photo itself (x1.15), so small originals stay sharp */
+  .walk__frame { position: relative; flex: none; height: min(56svh, 560px, var(--h) * 1.15); aspect-ratio: var(--ar); border-radius: 4px; overflow: hidden; }
+  .walk__img { width: 100%; height: 100%; object-fit: cover; }
+  .walk__frame::after {
+    content: ''; position: absolute; inset: 10px; border-radius: 2px; pointer-events: none;
+    border: 1px solid rgb(233 201 160 / 0.7); outline: 1px solid rgb(233 201 160 / 0.35); outline-offset: 4px;
+  }
+  .walk__n { position: absolute; left: 24px; bottom: 22px; padding: 6px 12px 4px; border-radius: 999px; background: rgb(8 24 16 / 0.8); font: 400 var(--step-0)/1 var(--display); color: #f0d9b8; }
+
+  /* phones and reduced motion: a native swipe row instead of the pin */
+  .walk.is-native .walk__track { width: auto; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: none; }
+  .walk.is-native .walk__track::-webkit-scrollbar { display: none; }
+  .walk.is-native .walk__frame { scroll-snap-align: center; }
+  @media (max-width: 899px) {
+    .walk__pin { min-height: 0; }
+    .walk__head { flex-direction: column; align-items: start; gap: 6px; }
+    .walk__frame { height: auto; width: 86vw; aspect-ratio: 4 / 5; }
+    .walk__plants { font-size: 1.5rem; padding-left: var(--gutter); }
+  }
+</style>
+
+<script>
+  import { motionOK, gsap } from '../../lib/motion';
+  const root = document.querySelector<HTMLElement>('[data-walk]');
+  if (root) {
+    const track = root.querySelector<HTMLElement>('[data-walk-track]')!;
+    const plants = root.querySelector<HTMLElement>('[data-walk-plants]')!;
+    const mm = gsap.matchMedia();
+    mm.add({ big: '(min-width: 900px)', small: '(max-width: 899px)' }, (ctx) => {
+      if (!ctx.conditions!.big || !motionOK()) {
+        root.classList.add('is-native');
+        return () => root.classList.remove('is-native');
+      }
+      const vw = () => document.documentElement.clientWidth;
+      const dist = () => Math.max(0, track.scrollWidth - vw());
+      // the plant names start pushed left and drift right while the photos travel left
+      const start = () => vw() - plants.scrollWidth * 0.5;
+      const tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: root, start: 'top top', end: () => '+=' + Math.min(dist(), window.innerHeight * 2.5),
+          pin: '[data-walk-pin]', pinType: 'transform', scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+        },
+      });
+      tl.fromTo(track, { x: 0 }, { x: () => -dist() }, 0)
+        .fromTo(plants, { x: () => start() }, { x: () => start() + dist() * 0.6 }, 0);
+    });
+  }
+</script>

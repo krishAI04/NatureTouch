@@ -1,0 +1,120 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Closing from '../components/home/Closing.astro';
+import { chapters, projects } from '../content/site';
+import { coverOf } from '../lib/project-photos';
+import archUrl from '../assets/svg/arch.svg?url';
+import dusk from '../assets/scene/dusk-pergola.jpg';
+import { wing } from '../lib/ornament';
+
+// each chapter opens onto real work that shows it; intros are DEMO
+const detail: Record<string, { numeral: string; intro: string; photo: ImageMetadata; alt: string; seen: string; note?: string }> = {
+  'design-build': {
+    numeral: 'I', intro: 'Every garden starts as a drawing by our own architects, and the same company builds it, so nothing is lost between plan and site.',
+    photo: coverOf('signature-home'), alt: 'Aerial of the Signature Homes podium garden, drawn as one zigzag of paths and lawns', seen: 'signature-home',
+  },
+  water: {
+    numeral: 'II', intro: 'Pools, fountains and rills for the eye; irrigation, treatment and harvesting so the garden drinks well through a Raipur summer.',
+    photo: coverOf('raipur-airport'), alt: 'A fountain and lawns in front of Raipur airport', seen: 'raipur-airport',
+  },
+  built: {
+    numeral: 'III', intro: 'Decks, pergolas and paths made for the site, in timber, stone and brick that weather well.',
+    photo: coverOf('khanuj-khanna'), alt: 'A timber pergola and deck at the Khanuj Khanna residence', seen: 'khanuj-khanna',
+  },
+  light: {
+    numeral: 'IV', intro: 'Uplights in the trees, low lights along the paths and a warm glow under the pergola, so the garden is used after dark.',
+    photo: dusk, alt: 'A pergola at dusk with uplights and a warm pendant', seen: 'khanuj-khanna', note: 'Illustration of the Khanuj Khanna pergola at dusk.',
+  },
+};
+const name = (slug: string) => projects.find((p) => p.slug === slug)!.name;
+---
+<Base title="Services" description="Twelve landscape services in four chapters: design and build, water, built outdoors and light. Drawn by our architects, built by our own teams in Raipur." og="services">
+  <PageHead title="One team for the whole garden" lede="Twelve services in four chapters. Our architects draw the garden, our teams build it, and the nursery grows what goes into it." />
+
+  <nav class="svx-toc wrap" aria-label="Chapters">
+    <ol>
+      {chapters.map((c) => <li><a href={`#${c.id}`}><span>{detail[c.id].numeral}</span>{c.title}</a></li>)}
+    </ol>
+  </nav>
+
+  {chapters.map((c, i) => {
+    const d = detail[c.id];
+    return (
+      <section class={`svx ${i % 2 ? 'svx--flip' : ''}`} id={c.id} aria-labelledby={`${c.id}-title`} style={`--arch:url("${archUrl}")`}>
+        <div class="wrap svx__grid">
+          <figure class="svx__media">
+            <div class="svx__frame">
+              <Image src={d.photo} alt={d.alt} widths={[480, 720, 1080]} sizes="(min-width: 900px) 34vw, 80vw" class="svx__img" loading={i === 0 ? 'eager' : 'lazy'} />
+            </div>
+            <figcaption>
+              {d.note ? d.note + ' ' : 'Seen at '}<a href={`/projects/${d.seen}/`}>{d.note ? 'See the project' : name(d.seen)}</a>
+            </figcaption>
+          </figure>
+          <div class="svx__body">
+            <p class="svx__num" aria-hidden="true">{d.numeral}</p>
+            <h2 id={`${c.id}-title`}>{c.title}</h2>
+            <div class="svx__rule" aria-hidden="true"><i></i><span set:html={wing} /></div>
+            <p class="svx__intro">{d.intro}</p>
+            <ul class="svx__list">
+              {c.services.map((s) => (
+                <li><h3>{s.name}</h3><p>{s.blurb}</p></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+    );
+  })}
+
+  <Closing />
+</Base>
+
+<style>
+  .svx-toc { padding-bottom: clamp(40px, 7vh, 72px); }
+  .svx-toc ol { list-style: none; margin: 0; padding: 18px 0 0; display: flex; flex-wrap: wrap; gap: 8px 36px; border-top: 1px solid rgb(233 201 160 / 0.25); }
+  .svx-toc a { display: inline-flex; align-items: baseline; gap: 10px; min-height: 44px; padding-block: 10px; text-decoration: none; font-weight: 600; }
+  .svx-toc span { font: 400 var(--step-0)/1 var(--display); color: #e9b98f; }
+  @media (hover: hover) and (pointer: fine) { .svx-toc a:hover { color: #f0d9b8; } }
+
+  .svx { border-top: 1px solid rgb(233 201 160 / 0.2); padding-block: clamp(72px, 13vh, 150px); scroll-margin-top: var(--bar-h); }
+  .svx--flip { background: var(--garden-950); }
+  .svx__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(40px, 7vw, 120px); align-items: center; }
+  .svx--flip .svx__media { order: 2; }
+
+  /* the photo in a tall jharokha arch with a sandstone frame */
+  .svx__media { margin: 0; max-width: 460px; justify-self: center; width: 100%; }
+  .svx__frame {
+    aspect-ratio: 100 / 128; padding: 6px; background: #c46a50;
+    -webkit-mask-image: var(--arch); mask-image: var(--arch);
+    -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  }
+  .svx__img {
+    width: 100%; height: 100%; object-fit: cover;
+    -webkit-mask-image: var(--arch); mask-image: var(--arch);
+    -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  }
+  figcaption { margin-top: 14px; text-align: center; font-size: var(--step--1); color: color-mix(in srgb, var(--marble) 72%, transparent); }
+  figcaption a { color: var(--marble); text-underline-offset: 3px; text-decoration-color: rgb(233 201 160 / 0.6); }
+
+  .svx__num { font: 400 var(--step-1)/1 var(--display); color: #e9b98f; }
+  h2 { margin-top: 10px; font-size: var(--step-3); }
+  /* the same diamond-and-wing rule as the homepage service cards, so both read as one system */
+  .svx__rule { display: flex; align-items: center; gap: 6px; margin-top: 14px; color: var(--sandstone); }
+  .svx__rule i { width: 8px; height: 8px; background: currentColor; transform: rotate(45deg); flex: none; }
+  .svx__rule span { width: clamp(120px, 12vw, 170px); }
+  .svx__rule :global(svg) { display: block; width: 100%; height: auto; }
+  .svx__intro { margin-top: 18px; max-width: 46ch; color: color-mix(in srgb, var(--marble) 84%, transparent); }
+  .svx__list { list-style: none; margin: clamp(28px, 5vh, 44px) 0 0; padding: 0; border-top: 1px solid rgb(233 201 160 / 0.3); }
+  .svx__list li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 32px; padding: 18px 0; border-bottom: 1px solid color-mix(in srgb, var(--marble) 12%, transparent); }
+  h3 { font: 600 var(--step-0)/1.35 var(--text); }
+  .svx__list p { font-size: var(--step--1); color: color-mix(in srgb, var(--marble) 76%, transparent); }
+
+  @media (max-width: 899px) {
+    .svx__grid { grid-template-columns: 1fr; }
+    .svx--flip .svx__media { order: 0; }
+    .svx__media { max-width: 340px; }
+    .svx__list li { grid-template-columns: 1fr; }
+  }
+</style>

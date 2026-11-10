@@ -1,0 +1,175 @@
+---
+import { Image } from 'astro:assets';
+import before from '../../assets/scene/before-farmhouse.jpg';
+import after from '../../assets/scene/after-farmhouse.jpg';
+import planRaw from '../../assets/svg/plan-farmhouse.svg?raw';
+import { projects } from '../../content/site';
+
+const project = projects.find((p) => p.slug === 'vinay-bajaj-farm-house')!;
+
+// normalise every stroke to length 1 so the draw animation needs no measuring.
+// The plan shares the photos' 3:2 canvas exactly (preserveAspectRatio none on an identical box).
+const plan = planRaw
+  .replace(/<(path|ellipse|circle)\b/g, '<$1 pathLength="1"')
+  // finer lines in the scene than on the About drawing: pale sandstone reads strongly over the photo
+  .replace(/stroke-width="([\d.]+)"/g, (_m, w) => `stroke-width="${(Number(w) * 0.6).toFixed(1)}"`)
+  .replace('<svg ', '<svg class="ptg__plan" aria-hidden="true" preserveAspectRatio="none" ');
+
+const stages = [
+  { en: 'Plot', hi: 'मिट्टी' },
+  { en: 'Plan', hi: 'नक्शा' },
+  { en: 'Planting', hi: 'रोपण' },
+  { en: 'Garden', hi: 'बगीचा' },
+];
+---
+<section class="ptg" data-ptg aria-labelledby="ptg-title">
+  <div class="ptg__pin" data-ptg-pin>
+    <figure class="ptg__frame" data-ptg-frame>
+      <!-- one 3:2 canvas that covers the screen; photos and plan sit on it at identical coordinates -->
+      <div class="ptg__canvas" data-ptg-canvas>
+        <Image src={before} alt="The Vinay Bajaj farmhouse plot before landscaping: levelled red earth inside the boundary walls (illustration)" widths={[1280, 1536, 1920]} sizes="(max-width: 899px) 185vw, 100vw" quality={62} class="ptg__img" />
+        <div class="ptg__grow" data-ptg-grow>
+          <Image src={after} alt="The finished garden: a lawn in front of the house, serpentine brick paths, a pool, palms and a lily pond with a timber bridge" widths={[1280, 1536, 1920]} sizes="(max-width: 899px) 185vw, 100vw" quality={62} class="ptg__img" />
+        </div>
+        <Fragment set:html={plan} />
+      </div>
+      <p class="ptg__tag" aria-hidden="true">Plot and plan: illustration</p>
+    </figure>
+
+    <div class="ptg__head wrap">
+      <div>
+        <h2 id="ptg-title">From bare plot to garden</h2>
+        <p class="ptg__note">{project.name}. The bare plot and the plan are illustrations made from the finished garden.</p>
+      </div>
+      <ol class="ptg__index" data-ptg-index>
+        {stages.map((s, i) => (
+          <li class={i === 0 ? 'is-on' : ''}><span class="en">{s.en}</span><span class="deva hi" lang="hi">{s.hi}</span></li>
+        ))}
+      </ol>
+    </div>
+
+    <div class="ptg__facts wrap" data-ptg-facts>
+      <p class="ptg__facts-name">{project.name}</p>
+      <p class="ptg__facts-line">{project.type} · {project.place} · {project.area}</p>
+      <a class="link" href={`/projects/${project.slug}/`}>See this project</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ptg { position: relative; background: var(--garden-950); }
+  .ptg__pin { position: relative; height: 100svh; overflow: hidden; }
+
+  /* full-bleed: the 3:2 canvas covers the screen, anchored a little below centre so the house clears the title */
+  .ptg__frame { position: absolute; inset: 0; margin: 0; overflow: hidden; container-type: size; }
+  .ptg__canvas {
+    position: absolute; left: 50%; top: 58%; width: max(100cqw, 150cqh); aspect-ratio: 3 / 2;
+    transform: translate(-50%, -58%); transform-origin: 50% 45%;
+  }
+  .ptg__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
+  .ptg__grow { position: absolute; inset: 0; }
+  .ptg__canvas :global(.ptg__plan) { position: absolute; inset: 0; width: 100%; height: 100%; stroke: #f0d3a8; filter: drop-shadow(0 0 1.5px rgb(30 14 8 / 0.85)) drop-shadow(0 0 8px rgb(10 32 22 / 0.5)); }
+  /* the bare plot is muted so colour floods back when the garden grows over it; the plan is drawn in pale sandstone, one plan colour site-wide */
+  .ptg__canvas > :global(.ptg__img) { filter: saturate(0.4) brightness(0.92); }
+  .ptg__canvas :global(.ptg__plan *) { stroke-dasharray: 1; stroke-dashoffset: 0; vector-effect: non-scaling-stroke; }
+
+  /* title and stages float over a soft fade at the top; facts over one at the bottom */
+  .ptg__frame::before, .ptg__frame::after { content: ''; position: absolute; left: 0; right: 0; z-index: 1; pointer-events: none; }
+  .ptg__frame::before { top: 0; height: 34%; background: linear-gradient(to bottom, rgb(11 32 22 / 0.88), rgb(11 32 22 / 0.5) 55%, transparent); }
+  .ptg__frame::after { bottom: 0; height: 30%; background: linear-gradient(to top, rgb(11 32 22 / 0.85), transparent); }
+
+  .ptg__head > div { min-width: 0; flex: 1 1 auto; }
+  .ptg__head {
+    position: absolute; left: 0; right: 0; top: calc(var(--bar-h) + 8px); z-index: 2;
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: 16px 32px;
+  }
+  h2 { font-size: var(--step-2); text-shadow: 0 2px 20px rgb(6 20 13 / 0.5); }
+  .ptg__note { margin-top: 8px; font-size: var(--step--1); color: color-mix(in srgb, var(--marble) 82%, transparent); max-width: 48ch; }
+  .ptg__index { display: flex; gap: clamp(16px, 2.6vw, 40px); margin: 0; padding: 0; list-style: none; }
+  .ptg__index li { display: grid; gap: 4px; color: color-mix(in srgb, var(--marble) 70%, transparent); transition: color 0.4s var(--ease-out); }
+  .ptg__index .en { font: 600 var(--step-0)/1.1 var(--text); letter-spacing: 0.01em; }
+  .ptg__index .hi { font-size: 1rem; }
+  .ptg__index li::after { content: ''; height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease-out); }
+  .ptg__index li.is-on { color: var(--marble); }
+  .ptg__index li.is-on .hi { color: var(--channel); }
+  .ptg__index li.is-on::after { transform: scaleX(1); background: var(--channel); }
+
+  .ptg__tag {
+    display: none; position: absolute; left: 10px; top: 10px; z-index: 2; margin: 0; padding: 4px 9px; border-radius: 3px;
+    font-size: 0.7rem; letter-spacing: 0.02em; color: var(--marble); background: rgb(11 32 22 / 0.72);
+  }
+  .ptg__facts { position: absolute; left: 0; right: 0; bottom: clamp(24px, 5vh, 48px); z-index: 2; display: grid; gap: 4px; justify-items: start; }
+  .ptg__facts-name { font: 400 var(--step-1)/1.1 var(--display); }
+  .ptg__facts-line { font-size: var(--step--1); color: color-mix(in srgb, var(--marble) 86%, transparent); }
+
+  /* phones: a simple stack (title, whole photo, details) so nothing overlaps at any screen height */
+  @media (max-width: 899px) {
+    .ptg__pin {
+      display: flex; flex-direction: column; justify-content: center; gap: clamp(12px, 2.4vh, 24px);
+      padding: 20px 0 calc(56px + 12px);
+    }
+    .ptg__head, .ptg__facts { position: static; }
+    .ptg__head { display: block; order: -1; }
+    .ptg__head h2 { font-size: clamp(1.6rem, 7.4vw, 2.2rem); }
+    .ptg__facts { gap: 2px; }
+    .ptg__facts-name { font-size: 1.2rem; }
+    .ptg__index { margin-top: 18px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+    .ptg__index li { justify-items: center; text-align: center; }
+    .ptg__index li::after { width: 70%; justify-self: center; }
+    .ptg__index .en { font-size: 0.95rem; }
+    /* phones: the title and the four stages only; the illustration note moves onto the photo as a small tag */
+    .ptg__note { display: none; }
+    .ptg__tag { display: block; }
+    .ptg__index .en { font-weight: 500; }
+    .ptg__index { margin-top: 14px; }
+    /* the photo fills the height left between title and details (cropped at the sides), so the held screen is never mostly empty */
+    .ptg__frame { position: relative; inset: auto; width: 100%; flex: 1 1 auto; min-height: min(56vw, 240px); max-height: 150vw; }
+    .ptg__frame::before, .ptg__frame::after { display: none; }
+    .ptg__canvas { top: 50%; width: max(100cqw, 150cqh); transform: translate(-50%, -50%); transform-origin: 50% 50%; }
+  }
+</style>
+
+<script>
+  import { motionOK, gsap } from '../../lib/motion';
+  const root = document.querySelector<HTMLElement>('[data-ptg]');
+  if (root) {
+    const index = [...root.querySelectorAll('[data-ptg-index] li')];
+    const grow = root.querySelector<HTMLElement>('[data-ptg-grow]')!;
+    const facts = root.querySelector<HTMLElement>('[data-ptg-facts]')!;
+    const plan = root.querySelectorAll<SVGElement>('.ptg__plan path, .ptg__plan ellipse, .ptg__plan circle');
+    const setStage = (i: number) => index.forEach((li, n) => li.classList.toggle('is-on', n === i));
+
+    if (!motionOK()) {
+      // static: the finished garden with its plan drawn, every stage named, facts shown
+      index.forEach((li) => li.classList.add('is-on'));
+    } else {
+      gsap.set(grow, { opacity: 0 });
+      gsap.set(plan, { strokeDashoffset: 1 });
+      gsap.set(facts, { autoAlpha: 0, y: 16 });
+      const tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: root, start: 'top top', end: () => '+=' + window.innerHeight * 2.4,
+          pin: '[data-ptg-pin]', pinType: 'transform', scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+        },
+      });
+      // explicit from/to values: invalidateOnRefresh re-reads start values, so .to() could start from an end state
+      tl.addLabel('plan', 0)
+        .fromTo(plan, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.2, stagger: 0.03 }, 'plan')   // the plan draws straight away
+        .addLabel('planting', '+=0.15')
+        .fromTo(grow, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'power1.inOut' }, 'planting')              // plot fades into the garden
+        .to({}, { duration: 0.9 })                                                                                // plan held over the finished garden
+        .fromTo('.ptg__plan', { opacity: 1 }, { opacity: 0, duration: 0.5 })
+        .addLabel('garden')
+        .fromTo(facts, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 'garden')
+        .to({}, { duration: 0.4 });
+      // no push-in: zooming magnified the photo's softness
+      const d = tl.duration();
+      const marks = [0, 0.04, tl.labels.planting / d, tl.labels.garden / d];
+      tl.eventCallback('onUpdate', () => {
+        const p = tl.progress();
+        setStage(marks.filter((m) => p >= m).length - 1);
+      });
+    }
+  }
+</script>

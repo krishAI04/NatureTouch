@@ -1,0 +1,88 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import PlantNiche from '../components/PlantNiche.astro';
+import sandstone from '../assets/textures/sandstone.jpg';
+import { nursery, nurseryPlants, company } from '../content/site';
+
+// photographed groups get a row of niches; the others are listed by name
+const groups = nursery.groups.map((g) => ({ name: g, note: nursery.notes[g], plants: nurseryPlants.filter((p) => p.group === g) }));
+const shown = groups.filter((g) => g.plants.length);
+const listed = groups.filter((g) => !g.plants.length);
+const ask = `${company.whatsapp}?text=${encodeURIComponent('Hello Nature Touch, please send me the current plant list from the Nature Care nursery.')}`;
+import Closing from '../components/home/Closing.astro';
+---
+<Base title="Nursery" description="Nature Care, the Nature Touch nursery in Raipur: ornamental, decorative, indoor-outdoor, avenue, fruit and palm plants for the gardens we build." og="nursery">
+  <div class="nx" style={`--sand-tex:url("${sandstone.src}")`}>
+    <PageHead title="Grown at Nature Care" lede="Our own nursery grows the plants that go into every garden we build, so planting starts with stock we know. Six groups, a few shown here.">
+      <a class="btn nx__cta" href={ask}>Ask for the plant list</a>
+    </PageHead>
+
+    {shown.map((g, i) => (
+      <section class="nx-group" aria-labelledby={`g-${i}`}>
+        <div class="wrap nx-group__grid">
+          <div class="nx-group__head">
+            <p class="nx-group__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</p>
+            <h2 id={`g-${i}`}>{g.name}</h2>
+            <p>{g.note}</p>
+          </div>
+          <ul class="nx-group__row">
+            {g.plants.map((p) => <li><PlantNiche n={p.n} name={p.name} latin={p.latin} sizes="(min-width: 900px) 16vw, 40vw" /></li>)}
+          </ul>
+        </div>
+      </section>
+    ))}
+
+    <section class="nx-more" aria-labelledby="more-title">
+      <div class="wrap nx-more__grid">
+        <h2 id="more-title">Also grown</h2>
+        {listed.map((g) => (
+          <div class="nx-more__item">
+            <h3>{g.name}</h3>
+            <p>{g.note}</p>
+          </div>
+        ))}
+        <div class="nx-more__ask">
+          <p>Stock changes with the season. Ask and we will send what is ready to plant.</p>
+          <a class="link" href={ask}>Ask on WhatsApp</a>
+        </div>
+      </div>
+    </section>
+  </div>
+  <Closing />
+</Base>
+
+<style>
+  /* the whole page sits on the darkened red sandstone wall from the homepage */
+  .nx {
+    background-color: #4a2116;
+    background-image: linear-gradient(rgb(40 16 10 / 0.74), rgb(40 16 10 / 0.74)), var(--sand-tex);
+    background-size: auto, 520px;
+  }
+  .nx__cta { margin-top: 28px; }
+
+  .nx-group { border-top: 1px solid rgb(233 201 160 / 0.22); padding-block: clamp(64px, 11vh, 120px); }
+  .nx-group__grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: clamp(32px, 6vw, 100px); align-items: end; }
+  .nx-group__n { font: 400 var(--step-1)/1 var(--display); color: #e9b98f; }
+  h2 { margin-top: 8px; font-size: var(--step-3); }
+  .nx-group__head p:last-child { margin-top: 14px; max-width: 34ch; color: color-mix(in srgb, var(--marble) 84%, transparent); }
+  .nx-group__row { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2.4vw, 36px); align-items: end; }
+
+  .nx-more { border-top: 1px solid rgb(233 201 160 / 0.22); padding-block: clamp(64px, 11vh, 120px) clamp(96px, 14vh, 160px); }
+  .nx-more__grid { display: grid; grid-template-columns: minmax(0, 4fr) repeat(2, minmax(0, 4fr)); gap: 32px clamp(32px, 6vw, 100px); align-items: start; }
+  .nx-more h3 { font: 400 var(--step-2)/1.1 var(--display); }
+  .nx-more__item p { margin-top: 10px; max-width: 34ch; color: color-mix(in srgb, var(--marble) 84%, transparent); }
+  .nx-more__ask { grid-column: 2 / -1; padding-top: 24px; border-top: 1px solid rgb(233 201 160 / 0.22); display: flex; flex-wrap: wrap; gap: 8px 32px; align-items: center; justify-content: space-between; }
+  .nx-more__ask p { color: color-mix(in srgb, var(--marble) 84%, transparent); }
+
+  @media (max-width: 899px) {
+    .nx-group__grid, .nx-more__grid { grid-template-columns: 1fr; }
+    .nx-group__row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .nx-more__ask { grid-column: auto; }
+  }
+  /* phones: two niches a row; a lone last niche is centred instead of left hanging */
+  @media (max-width: 599px) {
+    .nx-group__row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .nx-group__row > li:last-child:nth-child(odd) { grid-column: 1 / -1; justify-self: center; width: calc(50% - clamp(16px, 2.4vw, 36px) / 2); }
+  }
+</style>

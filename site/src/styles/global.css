@@ -1,0 +1,102 @@
+/* Nature Touch — char-bagh. Deep garden green carries the page; marble for light courses;
+   sandstone only as structure; channel aqua for active/progress; heritage lime as a small highlight. */
+@import "@fontsource/gloock/400.css";
+@import "@fontsource-variable/hanken-grotesk";
+@import "@fontsource/tiro-devanagari-hindi/400.css";
+
+:root {
+  --garden-950: #0b2016;
+  --garden-900: #10291c;
+  --garden-800: #173826;
+  --garden-600: #2e5a3e;
+  --marble: #eef0eb;
+  --sandstone: #a8452f;
+  --sandstone-soft: #c46a50;
+  --channel: #7cc6b2;
+  --gold: #e9c9a0;         /* pale sandstone-gold: hairlines, arrows, numerals on dark and photo grounds */
+  --ink: #0f1f17;
+
+  --display: "Gloock", "Times New Roman", serif;
+  --text: "Hanken Grotesk Variable", system-ui, sans-serif;
+  --deva: "Tiro Devanagari Hindi", "Nirmala UI", serif;
+
+  --gutter: clamp(16px, 4vw, 64px);
+  --max: 1440px;
+  --bar-h: 72px;
+
+  --step--1: clamp(0.88rem, 0.84rem + 0.15vw, 0.97rem);
+  --step-0: clamp(1rem, 0.96rem + 0.22vw, 1.15rem);
+  --step-1: clamp(1.25rem, 1.12rem + 0.6vw, 1.6rem);
+  --step-2: clamp(1.75rem, 1.4rem + 1.5vw, 2.75rem);
+  --step-3: clamp(2.4rem, 1.6rem + 3.4vw, 4.8rem);
+  --step-4: clamp(2.8rem, 1.6rem + 5.6vw, 7rem);
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --channel-line: 1px solid color-mix(in srgb, var(--channel) 55%, transparent);
+
+  color-scheme: dark;
+  scrollbar-color: var(--garden-600) var(--garden-950);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--bar-h) + 12px); }
+html, body { overflow-x: clip; }
+body {
+  margin: 0; min-height: 100svh;
+  background: var(--garden-900); color: var(--marble);
+  font-family: var(--text); font-size: var(--step-0); line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+img, video, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+a, button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 400; line-height: 1.04; letter-spacing: -0.005em; text-wrap: balance; }
+p { margin: 0; text-wrap: pretty; }
+::selection { background: var(--channel); color: var(--garden-950); }
+:focus-visible { outline: 2px solid var(--channel); outline-offset: 3px; }
+input, textarea { caret-color: var(--channel); }
+
+.wrap { width: min(100% - 2 * var(--gutter), var(--max)); margin-inline: auto; }
+.deva { font-family: var(--deva); font-weight: 400; letter-spacing: 0; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.skip {
+  position: fixed; left: var(--gutter); top: 12px; z-index: 200; padding: 12px 18px;
+  background: var(--marble); color: var(--garden-950); font-weight: 600; text-decoration: none;
+  transform: translateY(-160%); transition: transform 0.2s var(--ease-out);
+}
+.skip:focus { transform: none; }
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 48px; padding: 0 24px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--marble); color: var(--garden-950);
+  font: 600 var(--step--1)/1 var(--text); letter-spacing: 0.01em; text-decoration: none;
+  transition: transform 0.16s var(--ease-out), background-color 0.2s var(--ease-out);
+}
+.btn:active { transform: scale(0.97); }
+.btn--channel { background: var(--channel); }
+@media (hover: hover) and (pointer: fine) { .btn:hover { background: #fff; } .btn--channel:hover { background: #9bd8c7; } }
+
+.link {
+  text-decoration: none; padding-block: 10px;
+  background: linear-gradient(currentColor, currentColor) 0 calc(100% - 6px) / 100% 1px no-repeat;
+  transition: background-size 0.3s var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) { .link:hover { background-size: 0% 1px; background-position: 100% calc(100% - 6px); } }
+
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .link, .skip { transition: none; }
+}
+
+/* cross-page view transitions: a project photo grows from its tile into the case-study hero (and back) */
+@view-transition { navigation: auto; }
+::view-transition-group(*) { animation-duration: 0.6s; animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.35s; }
+::view-transition-old(.proj), ::view-transition-new(.proj) { width: 100%; height: 100%; object-fit: cover; overflow: clip; }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}

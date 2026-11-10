@@ -1,0 +1,63 @@
+---
+import PlantNiche from '../PlantNiche.astro';
+import sandstone from '../../assets/textures/sandstone.jpg';
+import { wing } from '../../lib/ornament';
+// four plants from the nursery, each set in a marble niche like a specimen in a palace wall
+const plants = [
+  { n: 'areca-palm', name: 'Areca palm', latin: 'Dypsis lutescens' },
+  { n: 'ficus', name: 'Ficus Audrey', latin: 'Ficus benghalensis' },
+  { n: 'sago-palm', name: 'Sago palm', latin: 'Cycas revoluta' },
+  { n: 'cordyline', name: 'Cordyline', latin: 'Cordyline fruticosa' },
+];
+---
+<section class="nur" aria-labelledby="nur-title" data-nur style={`--sand-tex:url("${sandstone.src}")`}>
+  <div class="wrap nur__grid">
+    <div class="nur__copy">
+      <p class="deva nur__hi" lang="hi">पौधशाला</p>
+      <h2 id="nur-title">Grown at Nature Care</h2>
+      <div class="nur__rule" aria-hidden="true"><span set:html={wing} /></div>
+      <p>Our own nursery grows the ornamental, indoor-outdoor, avenue, fruit and palm plants that go into every garden we build, so planting starts with stock we know.</p>
+      <a class="link" href="/nursery/">See the nursery</a>
+    </div>
+    <ul class="nur__arcade">
+      {plants.map((p) => (
+        <li class="nur__bay"><PlantNiche n={p.n} name={p.name} latin={p.latin} sizes="(min-width: 900px) 11vw, 36vw" /></li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* a red sandstone wall, darkened, with marble niches set into it */
+  .nur {
+    position: relative; color: var(--marble); padding-block: clamp(88px, 13vh, 150px); overflow: hidden;
+    background-color: #4a2116;
+    background-image: linear-gradient(rgb(40 16 10 / 0.7), rgb(40 16 10 / 0.7)), var(--sand-tex);
+    background-size: auto, 520px;
+  }
+  .nur__grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 88px); align-items: center; }
+  .nur__hi { color: #e9b98f; font-size: 1.15rem; }
+  h2 { font-size: var(--step-3); margin-top: 6px; }
+  .nur__rule { color: #d08a63; width: clamp(130px, 14vw, 180px); margin-top: 18px; }
+  .nur__rule :global(svg) { display: block; width: 100%; height: auto; }
+  .nur__copy p:not(.nur__hi) { margin-top: 16px; max-width: 42ch; color: color-mix(in srgb, var(--marble) 88%, transparent); }
+  .nur__copy .link { display: inline-block; margin-top: 22px; }
+
+  .nur__arcade { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 2vw, 28px); align-items: end; }
+
+  @media (max-width: 899px) {
+    .nur__grid { grid-template-columns: 1fr; }
+    .nur__arcade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 18px; }
+  }
+</style>
+
+<script>
+  import { motionOK, gsap } from '../../lib/motion';
+  // the niches rise into place, one after another, without fuss
+  if (motionOK()) {
+    gsap.from('[data-nur] .nur__bay', {
+      y: 28, opacity: 0, duration: 0.9, ease: 'power3.out', stagger: 0.1,
+      scrollTrigger: { trigger: '[data-nur] .nur__arcade', start: 'top 82%', once: true },
+    });
+  }
+</script>

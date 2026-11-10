@@ -1,0 +1,182 @@
+---
+import { Image } from 'astro:assets';
+import { projects } from '../../content/site';
+import { wing, arrow } from '../../lib/ornament';
+const covers = import.meta.glob<{ default: ImageMetadata }>('../../assets/projects/*/01.jpg', { eager: true });
+// Avinash New County's best photo is 360px wide, too small for a full-height panel; Romansque stands in
+const pick = ['khanuj-khanna', 'signature-home', 'raipur-airport', 'serikhedi', 'romansque'];
+const items = pick.map((slug) => {
+  const p = projects.find((x) => x.slug === slug)!;
+  return { ...p, cover: covers[`../../assets/projects/${slug}/01.jpg`].default };
+});
+---
+<section class="feat" aria-labelledby="feat-title">
+  <div class="wrap feat__head">
+    <div>
+      <h2 id="feat-title">Gardens we have built</h2>
+      <div class="feat__rule" aria-hidden="true"><span set:html={wing} /></div>
+    </div>
+    <a class="link" href="/projects/">All projects</a>
+  </div>
+  <div class="feat__stage" data-feat-stage>
+  <ul class="feat__row wrap" data-feat aria-label="Featured projects">
+    {items.map((p, i) => (
+      <li class="feat__item" style={`--i:${i}`}>
+        <a class="feat__link" href={`/projects/${p.slug}/`}>
+          <span class="feat__count" aria-hidden="true">{String(i + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}</span>
+          <span class="feat__media">
+            {/* tall crops sized to the resting panel: sharp at full height, light to load; on hover the film takes over */}
+            <Image src={p.cover} alt="" width={480} height={1040} fit="cover" widths={[360, 480]} sizes="(hover: none) and (min-width: 600px) 440px, (min-width: 900px) 260px, 84vw" quality={72} class="feat__img" loading="lazy" />
+            <video class="feat__film" muted loop playsinline preload="none" poster={`/films/${p.slug}.jpg`} data-src={`/films/${p.slug}.mp4`} data-src-m={`/films/m/${p.slug}.mp4`} aria-hidden="true"></video>
+          </span>
+          <span class="feat__label">
+            <span class="feat__name">{p.name}</span>
+            <span class="feat__flourish" aria-hidden="true"><span set:html={wing} class="l" /><i></i><span set:html={wing} /></span>
+            <span class="feat__meta">{p.type} · {p.place}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <button class="feat__arrow feat__arrow--prev" type="button" aria-label="Previous project" data-feat-prev disabled set:html={arrow} />
+  <button class="feat__pause" type="button" aria-pressed="false" data-feat-pause>Pause films</button>
+  <button class="feat__arrow feat__arrow--next" type="button" aria-label="Next project" data-feat-next set:html={arrow} />
+  </div>
+</section>
+
+<style>
+  .feat { background: var(--garden-900); border-top: var(--channel-line); padding-block: clamp(72px, 11vh, 128px); }
+  .feat__head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: clamp(24px, 4vh, 40px); }
+  .feat__head .link { white-space: nowrap; }
+  .feat__rule { width: clamp(130px, 14vw, 180px); margin-top: 10px; color: #d08a63; }
+  .feat__rule :global(svg) { display: block; width: 100%; height: auto; }
+  h2 { font-size: var(--step-3); }
+  .feat__row { list-style: none; margin-block: 0; padding: 0; display: flex; gap: 10px; height: min(72svh, 680px); }
+  .feat__item { flex: 1 1 0; min-width: 0; transition: flex-grow 0.55s var(--ease-out); }
+  .feat__row:has(.feat__link:hover, .feat__link:focus-visible) .feat__item { flex-grow: 0.8; }
+  .feat__row .feat__item:has(.feat__link:hover, .feat__link:focus-visible) { flex-grow: 3.2; }
+  .feat__link { position: relative; display: block; height: 100%; overflow: hidden; border-radius: 4px; text-decoration: none; background: var(--garden-950); }
+  .feat__media, .feat__img, .feat__film { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .feat__img, .feat__film { object-fit: cover; }
+  .feat__film { opacity: 0; transition: opacity 0.5s var(--ease-out); }
+  .feat__link.is-playing .feat__film { opacity: 1; }
+  .feat__img { transition: transform 0.9s var(--ease-out); }
+  /* a double hairline frame inside each panel, like a mount around a court painting */
+  .feat__link::after {
+    content: ''; position: absolute; inset: 10px; z-index: 2; pointer-events: none; border-radius: 2px;
+    border: 1px solid rgb(233 201 160 / 0.75); outline: 1px solid rgb(233 201 160 / 0.4); outline-offset: 4px;
+  }
+  @media (hover: hover) and (pointer: fine) { .feat__link:hover .feat__img { transform: scale(1.03); } }
+  .feat__label {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 72px 26px 28px; display: grid; gap: 4px; justify-items: center; text-align: center;
+    background: linear-gradient(to top, rgb(8 24 16 / 0.86), transparent);
+  }
+  .feat__name { font: 400 var(--step-1)/1.1 var(--display); }
+  .feat__flourish { display: flex; align-items: center; gap: 4px; color: var(--gold); }
+  .feat__flourish > span { width: 52px; }
+  .feat__flourish :global(svg) { display: block; width: 100%; height: auto; }
+  .feat__flourish .l :global(svg) { transform: scaleX(-1); }
+  .feat__flourish i { width: 5px; height: 5px; background: currentColor; transform: rotate(45deg); flex: none; }
+  .feat__meta { font-size: var(--step--1); color: color-mix(in srgb, var(--marble) 86%, transparent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .feat__link:focus-visible { outline-offset: -4px; }
+
+  .feat__stage { position: relative; }
+  .feat__arrow, .feat__pause { display: none; }
+  /* phones and touch: a swipeable row of framed cards, with royal arrows; tapping a card opens the project */
+  @media (hover: none), (max-width: 899px) {
+    .feat__row {
+      display: flex; gap: 14px; height: auto; width: 100%; padding-inline: var(--gutter); overflow-x: auto; overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter, 20px); scrollbar-width: none;
+    }
+    .feat__row::-webkit-scrollbar { display: none; }
+    .feat__item { flex: 0 0 min(84%, 440px); scroll-snap-align: center; } /* wide touch screens show several cards, never one stretched one */
+    .feat__link { height: min(64svh, 540px); }
+    .feat__count { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); z-index: 3; padding: 6px 12px; border-radius: 999px; background: rgb(8 24 16 / 0.8); font: 500 0.78rem/1 var(--text); letter-spacing: 0.14em; color: #f0d9b8; white-space: nowrap; }
+    .feat__arrow {
+      display: grid; place-items: center; position: absolute; top: 50%; z-index: 4; width: 48px; height: 48px; padding: 0;
+      border-radius: 50%; border: 1px solid var(--gold); outline: 1px solid rgb(233 201 160 / 0.45); outline-offset: 3px;
+      background: rgb(8 24 16 / 0.72); color: #f0d9b8; cursor: pointer; transform: translateY(-50%);
+      transition: opacity 0.25s var(--ease-out), transform 0.15s var(--ease-out);
+    }
+    .feat__arrow :global(svg) { width: 26px; height: auto; }
+    .feat__arrow--prev { left: 10px; }
+    .feat__arrow--prev :global(svg) { transform: scaleX(-1); }
+    .feat__arrow--next { right: 10px; }
+    .feat__arrow:active { transform: translateY(-50%) scale(0.94); }
+    .feat__arrow:disabled { opacity: 0; pointer-events: none; }
+    .feat__pause {
+      display: inline-flex; align-items: center; min-height: 44px; margin: 14px var(--gutter) 0; padding: 0 16px;
+      border-radius: 999px; border: 1px solid rgb(233 201 160 / 0.6); background: transparent; color: #f0d9b8;
+      font: 600 var(--step--1)/1 var(--text); cursor: pointer;
+    }
+  }
+  @media (hover: hover) and (min-width: 900px) { .feat__count { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .feat__item, .feat__img, .feat__film { transition: none; } }
+</style>
+
+<script>
+  import { motionOK } from '../../lib/motion';
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-feat] .feat__link')];
+  // hover/focus plays the project's film; it loads only when first asked for
+  if (motionOK() && window.matchMedia('(hover: hover) and (min-width: 900px)').matches) {
+    links.forEach((a) => {
+      const v = a.querySelector<HTMLVideoElement>('video')!;
+      const play = () => { if (!v.src) v.src = v.dataset.src!; v.play().then(() => a.classList.add('is-playing')).catch(() => {}); };
+      const stop = () => { a.classList.remove('is-playing'); v.pause(); };
+      a.addEventListener('pointerenter', play); a.addEventListener('focus', play);
+      a.addEventListener('pointerleave', stop); a.addEventListener('blur', stop);
+    });
+  }
+  // phones: arrows step the row one card at a time; swiping is native scroll-snap
+  const row = document.querySelector<HTMLElement>('[data-feat]');
+  const prev = document.querySelector<HTMLButtonElement>('[data-feat-prev]');
+  const next = document.querySelector<HTMLButtonElement>('[data-feat-next]');
+  if (row && prev && next) {
+    const items = [...row.children] as HTMLElement[];
+    const current = () => {
+      const mid = row.scrollLeft + row.clientWidth / 2;
+      let best = 0;
+      items.forEach((el, i) => { if (Math.abs(el.offsetLeft + el.offsetWidth / 2 - mid) < Math.abs(items[best].offsetLeft + items[best].offsetWidth / 2 - mid)) best = i; });
+      return best;
+    };
+    const go = (i: number) => {
+      const el = items[Math.max(0, Math.min(items.length - 1, i))];
+      row.scrollTo({ left: el.offsetLeft + el.offsetWidth / 2 - row.clientWidth / 2, behavior: motionOK() ? 'smooth' : 'auto' });
+    };
+    const sync = () => { const i = current(); prev.disabled = i === 0; next.disabled = i === items.length - 1; };
+    prev.addEventListener('click', () => go(current() - 1));
+    next.addEventListener('click', () => go(current() + 1));
+    row.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    sync();
+
+    // phones: the card in the middle plays its film; the others rest on their photo
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (motionOK() && !saveData && window.matchMedia('(hover: none), (max-width: 899px)').matches) {
+      const pauseBtn = document.querySelector<HTMLButtonElement>('[data-feat-pause]');
+      let paused = false;
+      pauseBtn?.addEventListener('click', () => {
+        paused = !paused;
+        pauseBtn.setAttribute('aria-pressed', String(paused));
+        pauseBtn.textContent = paused ? 'Play films' : 'Pause films';
+        links.forEach((a) => { const v = a.querySelector('video')!; if (paused) { v.pause(); a.classList.remove('is-playing'); } });
+        if (!paused) items.forEach((el) => { io.unobserve(el); io.observe(el); }); // re-check which card is centred
+      });
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          const a = e.target.querySelector<HTMLAnchorElement>('.feat__link')!;
+          const v = a.querySelector<HTMLVideoElement>('video')!;
+          if (e.isIntersecting && !paused) {
+            if (!v.src) v.src = v.dataset.srcM || v.dataset.src!; // phones get the light portrait cut
+            v.play().then(() => a.classList.add('is-playing')).catch(() => {});
+          } else { a.classList.remove('is-playing'); v.pause(); }
+        });
+      }, { root: row, threshold: 0.7 });
+      // only watch the row while the section itself is on screen
+      const outer = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) items.forEach((el) => io.observe(el));
+        else { io.disconnect(); links.forEach((a) => { a.classList.remove('is-playing'); a.querySelector('video')!.pause(); }); }
+      }, { threshold: 0.25 });
+      outer.observe(row);
+    }
+  }
+</script>

@@ -1,0 +1,110 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import ProofStrip from '../components/home/ProofStrip.astro';
+import Closing from '../components/home/Closing.astro';
+import { about, company } from '../content/site';
+import { photosOf } from '../lib/project-photos';
+import planRaw from '../assets/svg/plan-farmhouse.svg?raw';
+import after from '../assets/scene/after-farmhouse.jpg';
+import marble from '../assets/textures/marble.jpg';
+
+const wide = photosOf('khanuj-khanna')[2];
+const plan = planRaw.replace('<svg ', '<svg class="ab-plan__svg" aria-hidden="true" ');
+const numerals = ['I', 'II', 'III', 'IV'];
+---
+<Base title="About" description={`${company.name}: landscape architects and builders in Raipur, with our own nursery. ${about.lede}`} og="about">
+  <PageHead title="Gardens drawn and built in Raipur" lede={about.lede} />
+
+  <figure class="ab-wide wrap">
+    <div class="ab-wide__frame">
+      <Image src={wide} alt="A paved walk with spiral stone patterns, lined with palms and flowering beds, at the Khanuj Khanna residence" widths={[960, 1440, 2048]} sizes="(min-width: 1440px) 1312px, 92vw" class="ab-wide__img" loading="eager" />
+    </div>
+  </figure>
+
+  <!-- DEMO copy: the story and the studio are written for the pitch -->
+  <section class="ab-story wrap" aria-labelledby="story-title">
+    <h2 id="story-title">One company, from plan to planting</h2>
+    <div class="ab-story__text">
+      <p>Nature Touch began with farmhouse gardens on the edge of Raipur and grew into townships, campuses and the city's public spaces. The way of working stayed the same: the people who draw a garden are the people who build it.</p>
+      <p>That is why we keep architects, site teams and a nursery under one roof. A plan never waits on another firm, and the plants that arrive on site are ones we have grown and know.</p>
+    </div>
+  </section>
+
+  <section class="ab-studio" aria-labelledby="studio-title" style={`--marble-tex:url("${marble.src}")`}>
+    <div class="wrap ab-studio__grid">
+      <div class="ab-studio__copy">
+        <h2 id="studio-title">Architects in house</h2>
+        <p>Every project starts as a measured plan: paths, lawns, water, light and planting, drawn to the site's sun and soil. The plan below became the Vinay Bajaj farmhouse garden.</p>
+        <a class="link" href="/projects/vinay-bajaj-farm-house/">See the finished garden</a>
+      </div>
+      <figure class="ab-plan">
+        <div class="ab-plan__sheet">
+          <Image src={after} alt="" widths={[640, 960]} sizes="(min-width: 900px) 50vw, 92vw" class="ab-plan__photo" loading="lazy" />
+          <Fragment set:html={plan} />
+        </div>
+        <figcaption>The plan drawn over the finished garden (illustration).</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="ab-steps wrap" aria-labelledby="steps-title">
+    <h2 id="steps-title">How we work</h2>
+    <!-- four steps laid out as a char-bagh: quadrants split by water channels meeting at a pool -->
+    <ol class="ab-steps__quad">
+      {about.steps.map((s, i) => (
+        <li><span class="ab-steps__n" aria-hidden="true">{numerals[i]}</span><h3>{s.title}</h3><p>{s.text}</p></li>
+      ))}
+      <li class="ab-steps__pool" aria-hidden="true"></li>
+    </ol>
+  </section>
+
+  <ProofStrip />
+  <Closing />
+</Base>
+
+<style>
+  .ab-wide { margin-block: 0; }
+  .ab-wide__frame { position: relative; aspect-ratio: 21 / 9; overflow: hidden; border-radius: 4px; }
+  .ab-wide__frame::after { content: ''; position: absolute; inset: 12px; border-radius: 2px; pointer-events: none; border: 1px solid rgb(233 201 160 / 0.7); outline: 1px solid rgb(233 201 160 / 0.35); outline-offset: 4px; }
+  .ab-wide__img { width: 100%; height: 100%; object-fit: cover; }
+
+  .ab-story { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 6vw, 100px); padding-block: clamp(80px, 14vh, 160px); }
+  h2 { font-size: var(--step-3); }
+  .ab-story__text { display: grid; gap: 18px; max-width: 58ch; font-size: var(--step-1); line-height: 1.5; color: color-mix(in srgb, var(--marble) 88%, transparent); }
+
+  .ab-studio { background: var(--garden-950); border-block: 1px solid rgb(233 201 160 / 0.2); padding-block: clamp(80px, 14vh, 160px); }
+  .ab-studio__grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(32px, 6vw, 100px); align-items: center; }
+  .ab-studio__copy p { margin-top: 18px; max-width: 40ch; color: color-mix(in srgb, var(--marble) 84%, transparent); }
+  .ab-studio__copy .link { display: inline-block; margin-top: 18px; }
+  .ab-plan { margin: 0; }
+  /* the plan in sandstone ink over a faded photo, on a marble sheet */
+  .ab-plan__sheet {
+    position: relative; aspect-ratio: 3 / 2; padding: 0; border-radius: 4px; overflow: hidden;
+    background-color: var(--marble); background-image: var(--marble-tex); background-size: 600px;
+    box-shadow: inset 0 0 0 8px var(--marble), inset 0 0 0 9px rgb(168 69 47 / 0.5);
+  }
+  .ab-plan__photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.32; filter: grayscale(0.5); mix-blend-mode: multiply; }
+  .ab-plan__sheet :global(.ab-plan__svg) { position: absolute; inset: 0; width: 100%; height: 100%; stroke: var(--sandstone); }
+  .ab-plan figcaption { margin-top: 12px; font-size: var(--step--1); color: color-mix(in srgb, var(--marble) 70%, transparent); }
+
+  .ab-steps { padding-block: clamp(80px, 14vh, 160px); }
+  .ab-steps__quad { position: relative; list-style: none; margin: clamp(32px, 6vh, 56px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ab-steps__quad li:not(.ab-steps__pool) { padding: clamp(24px, 4vw, 48px); }
+  .ab-steps__quad li:nth-child(1), .ab-steps__quad li:nth-child(3) { border-right: 2px solid var(--channel); }
+  .ab-steps__quad li:nth-child(3), .ab-steps__quad li:nth-child(4) { border-top: 2px solid var(--channel); }
+  .ab-steps__pool { position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; transform: translate(-50%, -50%) rotate(45deg); background: var(--garden-900); border: 2px solid var(--channel); box-shadow: 0 0 0 6px var(--garden-900); }
+  .ab-steps__n { font: 400 var(--step-1)/1 var(--display); color: #e9b98f; }
+  h3 { margin-top: 12px; font-size: var(--step-2); }
+  .ab-steps__quad p { margin-top: 10px; max-width: 36ch; color: color-mix(in srgb, var(--marble) 82%, transparent); }
+
+  @media (max-width: 899px) {
+    .ab-wide__frame { aspect-ratio: 4 / 3; }
+    .ab-story, .ab-studio__grid { grid-template-columns: 1fr; }
+    .ab-steps__quad { grid-template-columns: 1fr; }
+    .ab-steps__quad li:not(.ab-steps__pool) { border-right: 0 !important; border-top: 2px solid var(--channel); padding-inline: 0; }
+    .ab-steps__quad li:first-child { border-top: 0; }
+    .ab-steps__pool { display: none; }
+  }
+</style>

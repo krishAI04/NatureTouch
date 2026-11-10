@@ -1,0 +1,34 @@
+---
+import Mark from './Mark.astro';
+const year = 2026;
+---
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div>
+      <a class="foot__mark" href="/" aria-label="Nature Touch, home"><Mark /><span translate="no">Nature Touch</span></a>
+      <p class="foot__sign"><span class="deva" lang="hi">हरा भरा रहे</span> · Go Green</p>
+    </div>
+    <address>
+      B-65 Geekay Mile Stone, New Rajendra Nagar,<br />Ring Road No.1, Raipur (C.G.)
+    </address>
+    <ul class="foot__contact">
+      <li><a href="tel:+919993550303">+91 999 355 0303</a></li>
+      <li><a href="tel:+917714009300">(0771) 4009300</a></li>
+      <li><a href="mailto:info@naturetouch.co.in">info@naturetouch.co.in</a></li>
+    </ul>
+  </div>
+  <p class="wrap foot__demo">Concept demo, {year}. Project details and some copy are placeholders. Nature Touch Landscape Pvt. Ltd.</p>
+</footer>
+
+<style>
+  .foot { background: var(--garden-950); border-top: var(--channel-line); padding-block: 56px 28px; font-size: var(--step--1); }
+  .foot__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+  .foot__mark { display: inline-flex; gap: 12px; align-items: center; text-decoration: none; font: 400 1.4rem/1 var(--display); min-height: 44px; }
+  .foot__sign { margin-top: 12px; color: var(--channel); }
+  .foot__sign .deva { font-size: 1.2em; }
+  address { font-style: normal; line-height: 1.6; }
+  .foot__contact { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .foot__contact a { display: inline-flex; min-height: 44px; align-items: center; }
+  .foot__demo { margin-top: 40px; padding-top: 16px; border-top: 1px solid color-mix(in srgb, var(--marble) 14%, transparent); color: color-mix(in srgb, var(--marble) 72%, transparent); }
+  @media (max-width: 767px) { .foot__grid { grid-template-columns: 1fr; } .foot { padding-bottom: 96px; } }
+</style>

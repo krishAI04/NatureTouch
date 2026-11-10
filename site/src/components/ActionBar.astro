@@ -1,0 +1,26 @@
+---
+// Phone-width action bar: the one action, always reachable, never covering content (footer pads for it).
+---
+<nav class="actionbar" aria-label="Quick contact">
+  <a href="tel:+919993550303">Call</a>
+  <a href="https://wa.me/919993550303">WhatsApp</a>
+  <a class="actionbar__main" href="/contact/">Discuss your site</a>
+</nav>
+<style>
+  .actionbar { display: none; }
+  @media (max-width: 767px) {
+    .actionbar {
+      position: fixed; inset: auto 0 0; z-index: 90; display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1.5fr); /* minmax(0) so it never widens the page */
+      gap: 1px; background: color-mix(in srgb, var(--channel) 50%, transparent);
+      border-top: 1px solid color-mix(in srgb, var(--channel) 50%, transparent);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .actionbar a {
+      display: grid; place-items: center; min-height: 56px; background: var(--garden-950);
+      text-decoration: none; font-weight: 600; font-size: clamp(0.8rem, 3.6vw, 0.97rem);
+      padding: 0 6px; text-align: center; line-height: 1.2;
+    }
+    .actionbar .actionbar__main { background: var(--channel); color: var(--garden-950); }
+  }
+</style>

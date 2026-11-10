@@ -1,0 +1,189 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { company } from '../content/site';
+import marble from '../assets/textures/marble.jpg';
+const tel = (p: string) => 'tel:' + p.replace(/[^\d+]/g, '');
+const types = ['Farmhouse', 'Home or terrace', 'Township or commercial', 'Public or institutional', 'Something else'];
+---
+<Base title="Contact" description="Discuss your site with Nature Touch in Raipur: call, WhatsApp, or send a few details and we will reply." og="contact">
+  <PageHead title="Discuss your site" lede="Tell us a little about the plot. We reply within a working day, usually on WhatsApp, and can visit the site anywhere around Raipur." />
+
+  <div class="ct wrap">
+    <aside class="ct__direct" aria-label="Reach us directly">
+      <h2>Talk to us</h2>
+      <ul>
+        {company.phones.map((p) => <li><a href={tel(p)}>{p}</a></li>)}
+        <li><a href={company.whatsapp}>WhatsApp {company.phones[0]}</a></li>
+        <li><a href={`mailto:${company.email}`}>{company.email}</a></li>
+      </ul>
+      <h2 class="ct__visit">Visit</h2>
+      <p>{company.address}</p>
+    </aside>
+
+    <form class="ct__form" novalidate data-form style={`--marble-tex:url("${marble.src}")`} aria-labelledby="form-title">
+      <h2 id="form-title">Send a few details</h2>
+      <div class="ct__summary" role="alert" tabindex="-1" data-summary hidden>
+        <p>Please check {''}<span data-count>these</span>:</p>
+        <ul data-summary-list></ul>
+      </div>
+
+      <div class="f">
+        <label for="f-name">Your name</label>
+        <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="f-name-err" />
+        <p class="f__err" aria-live="polite" id="f-name-err" data-err></p>
+      </div>
+      <div class="f">
+        <label for="f-phone">Phone or WhatsApp number</label>
+        <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required aria-describedby="f-phone-hint f-phone-err" />
+        <p class="f__hint" id="f-phone-hint">10 digits; +91 is fine.</p>
+        <p class="f__err" aria-live="polite" id="f-phone-err" data-err></p>
+      </div>
+      <div class="f">
+        <label for="f-place">Where is the site?</label>
+        <input id="f-place" name="place" type="text" autocomplete="address-level2" required aria-describedby="f-place-err" placeholder="For example, Dharampura, Raipur…" />
+        <p class="f__err" aria-live="polite" id="f-place-err" data-err></p>
+      </div>
+      <fieldset class="f f--choice">
+        <legend>What kind of site?</legend>
+        <div class="f__chips">
+          {types.map((t, i) => (
+            <label class="chip"><input type="radio" name="type" value={t} checked={i === 0} /><span>{t}</span></label>
+          ))}
+        </div>
+      </fieldset>
+      <div class="f">
+        <label for="f-msg">Anything else <span class="f__opt">(optional)</span></label>
+        <textarea id="f-msg" name="message" rows="4" placeholder="Size of the plot, what you would like, a rough timeline…"></textarea>
+      </div>
+      <fieldset class="f f--choice">
+        <legend>How should we reply?</legend>
+        <div class="f__chips">
+          <label class="chip"><input type="radio" name="reply" value="whatsapp" checked /><span>WhatsApp</span></label>
+          <label class="chip"><input type="radio" name="reply" value="email" /><span>Email</span></label>
+        </div>
+      </fieldset>
+
+      <button class="btn btn--channel ct__send" type="submit">Send details</button>
+      <p class="ct__note">This opens WhatsApp or your email app with the message written for you; nothing is stored on this site.</p>
+    </form>
+  </div>
+</Base>
+
+<style>
+  .ct { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(40px, 7vw, 120px); align-items: start; padding-bottom: clamp(96px, 16vh, 180px); }
+  .ct__direct h2 { font: 400 1.3rem/1.2 var(--display); color: #e9b98f; }
+  .ct__direct ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 4px; }
+  .ct__direct a { display: inline-flex; align-items: center; min-height: 44px; font: 400 var(--step-1)/1.2 var(--display); text-decoration: none; background: linear-gradient(rgb(233 201 160 / 0.6), rgb(233 201 160 / 0.6)) 0 calc(100% - 8px) / 100% 1px no-repeat; }
+  .ct__visit { margin-top: 36px; }
+  .ct__direct p { margin-top: 12px; max-width: 32ch; color: color-mix(in srgb, var(--marble) 84%, transparent); }
+
+  /* the form on a marble panel with the double sandstone inlay used by the service cards */
+  .ct__form {
+    color: var(--ink); border-radius: 6px; padding: clamp(28px, 4vw, 52px);
+    background-color: var(--marble); background-image: var(--marble-tex); background-size: cover; background-position: center;
+    box-shadow: inset 0 0 0 8px var(--marble), inset 0 0 0 9px color-mix(in srgb, var(--sandstone) 55%, transparent),
+                inset 0 0 0 13px var(--marble), inset 0 0 0 14px color-mix(in srgb, var(--sandstone) 30%, transparent);
+    display: grid; gap: 22px;
+  }
+  .ct__form h2 { font-size: var(--step-2); }
+  .f { display: grid; gap: 6px; margin: 0; padding: 0; border: 0; min-width: 0; }
+  .f label, .f legend { font-weight: 650; padding: 0; }
+  .f__opt { font-weight: 400; color: #4d5b52; }
+  .f input[type='text'], .f input[type='tel'], .f textarea {
+    width: 100%; min-height: 48px; padding: 12px 14px; border-radius: 4px; font: inherit; color: var(--ink);
+    background: rgb(255 255 255 / 0.85); border: 1px solid #8a948c; transition: border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+  }
+  .f textarea { resize: vertical; }
+  .f input::placeholder, .f textarea::placeholder { color: #66716a; }
+  .f input:focus-visible, .f textarea:focus-visible { outline: none; border-color: var(--garden-800); box-shadow: 0 0 0 3px rgb(23 56 38 / 0.25); }
+  .f [aria-invalid='true'] { border-color: #a8452f; box-shadow: 0 0 0 1px #a8452f; }
+  .f__hint { font-size: var(--step--1); color: #4d5b52; }
+  .f__err { font-size: var(--step--1); font-weight: 600; color: #8c3322; }
+  .f__err:empty { display: none; }
+
+  .f__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .chip { position: relative; }
+  .chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .chip span {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px; font-weight: 500;
+    border: 1px solid #8a948c; background: rgb(255 255 255 / 0.6); transition: background-color 0.2s var(--ease-out), color 0.2s var(--ease-out);
+  }
+  .chip input:checked + span { background: var(--garden-800); border-color: var(--garden-800); color: var(--marble); }
+  .chip input:focus-visible + span { outline: 2px solid var(--garden-800); outline-offset: 2px; }
+
+  .ct__summary { padding: 14px 18px; border: 1px solid rgb(168 69 47 / 0.55); border-radius: 4px; background: rgb(168 69 47 / 0.08); }
+  .ct__summary p { font-weight: 650; }
+  .ct__summary ul { margin: 6px 0 0; padding-left: 18px; }
+  .ct__summary a { color: #8c3322; }
+  .ct__send { justify-self: start; min-height: 52px; padding: 0 28px; }
+  .ct__note { font-size: var(--step--1); color: #4d5b52; }
+
+  @media (max-width: 899px) { .ct { grid-template-columns: 1fr; } .ct__form { order: -1; } }
+  @media (prefers-reduced-motion: reduce) { .f input, .f textarea, .chip span { transition: none; } }
+</style>
+
+<script>
+  import { company } from '../content/site';
+  const form = document.querySelector<HTMLFormElement>('[data-form]');
+  if (form) {
+    const summary = form.querySelector<HTMLElement>('[data-summary]')!;
+    const list = form.querySelector<HTMLElement>('[data-summary-list]')!;
+    const fields = {
+      name: { el: form.elements.namedItem('name') as HTMLInputElement, check: (v: string) => (v.trim().length >= 2 ? '' : 'Enter your name.') },
+      phone: {
+        el: form.elements.namedItem('phone') as HTMLInputElement,
+        check: (v: string) => {
+          const d = v.replace(/\D/g, '').replace(/^(91|0)(?=\d{10}$)/, '');
+          if (!v.trim()) return 'Enter a phone number so we can reply.';
+          return /^[6-9]\d{9}$/.test(d) ? '' : 'Enter a 10-digit mobile number, for example 98765 43210.';
+        },
+      },
+      place: { el: form.elements.namedItem('place') as HTMLInputElement, check: (v: string) => (v.trim().length >= 2 ? '' : 'Tell us roughly where the site is.') },
+    };
+    type Key = keyof typeof fields;
+    const show = (k: Key) => {
+      const f = fields[k];
+      const msg = f.check(f.el.value);
+      const err = document.getElementById(`${f.el.id}-err`)!;
+      err.textContent = msg;
+      f.el.setAttribute('aria-invalid', String(!!msg));
+      return msg;
+    };
+    // errors appear when a field is left, and clear as soon as it is fixed
+    (Object.keys(fields) as Key[]).forEach((k) => {
+      const el = fields[k].el;
+      el.addEventListener('blur', () => { if (el.value) show(k); });
+      el.addEventListener('input', () => { if (el.getAttribute('aria-invalid') === 'true') show(k); });
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const bad = (Object.keys(fields) as Key[]).map((k) => [k, show(k)] as const).filter(([, m]) => m);
+      if (bad.length) {
+        list.innerHTML = '';
+        bad.forEach(([k, m]) => {
+          const li = document.createElement('li'); const a = document.createElement('a');
+          a.href = `#${fields[k].el.id}`; a.textContent = m;
+          a.addEventListener('click', (ev) => { ev.preventDefault(); fields[k].el.focus(); });
+          li.append(a); list.append(li);
+        });
+        form.querySelector('[data-count]')!.textContent = bad.length === 1 ? 'this' : `these ${bad.length}`;
+        summary.hidden = false; summary.focus();
+        return;
+      }
+      summary.hidden = true;
+      const data = new FormData(form);
+      const lines = [
+        'Hello Nature Touch, I would like to discuss a site.',
+        `Name: ${data.get('name')}`, `Phone: ${data.get('phone')}`, `Site: ${data.get('place')}`, `Type: ${data.get('type')}`,
+        String(data.get('message') || '').trim() && `Notes: ${String(data.get('message')).trim()}`,
+      ].filter(Boolean).join('\n');
+      const url = data.get('reply') === 'email'
+        ? `mailto:${company.email}?subject=${encodeURIComponent('Site enquiry from the website')}&body=${encodeURIComponent(lines)}`
+        : `${company.whatsapp}?text=${encodeURIComponent(lines)}`;
+      form.dataset.handoff = url;
+      window.location.href = url;
+    });
+  }
+</script>

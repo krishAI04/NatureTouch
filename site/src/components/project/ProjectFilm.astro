@@ -1,0 +1,58 @@
+---
+// The project's film (a slow pan across its photographs). Plays while on screen; a button pauses it.
+interface Props { slug: string; name: string }
+const { slug, name } = Astro.props;
+---
+<section class="film wrap" aria-label={`${name} film`} data-film>
+  <figure class="film__frame">
+    <video muted loop playsinline preload="none" poster={`/films/${slug}.jpg`} data-src={`/films/${slug}.mp4`} aria-label={`A slow pan across photographs of ${name}`}></video>
+    <button class="film__btn" type="button" aria-pressed="false" data-film-btn>
+      <span class="film__icon" aria-hidden="true"></span><span data-film-label>Play film</span>
+    </button>
+  </figure>
+  <p class="film__cap">A short film made from the project's photographs.</p>
+</section>
+
+<style>
+  .film { padding-block: clamp(64px, 10vh, 120px); }
+  .film__frame { position: relative; margin: 0; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 4px; background: var(--garden-950); }
+  .film__frame video { width: 100%; height: 100%; object-fit: cover; }
+  .film__frame::after {
+    content: ''; position: absolute; inset: 12px; border-radius: 2px; pointer-events: none;
+    border: 1px solid rgb(233 201 160 / 0.7); outline: 1px solid rgb(233 201 160 / 0.35); outline-offset: 4px;
+  }
+  .film__btn {
+    position: absolute; right: 28px; bottom: 28px; z-index: 2; display: inline-flex; align-items: center; gap: 10px;
+    min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--gold);
+    background: rgb(8 24 16 / 0.72); color: #f0d9b8; font: 600 var(--step--1)/1 var(--text); cursor: pointer;
+  }
+  .film__btn:active { transform: scale(0.97); }
+  .film__icon { width: 10px; height: 12px; background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+  .film__btn[aria-pressed='true'] .film__icon { clip-path: polygon(0 0, 35% 0, 35% 100%, 0 100%, 0 0, 65% 0, 100% 0, 100% 100%, 65% 100%, 65% 0); }
+  .film__cap { margin-top: 14px; font-size: var(--step--1); color: color-mix(in srgb, var(--marble) 70%, transparent); }
+  @media (max-width: 599px) {
+    .film__frame { aspect-ratio: 4 / 5; }
+    .film__btn { right: 20px; bottom: 20px; }
+  }
+</style>
+
+<script>
+  import { motionOK } from '../../lib/motion';
+  const root = document.querySelector<HTMLElement>('[data-film]');
+  if (root) {
+    const v = root.querySelector('video')!;
+    const btn = root.querySelector<HTMLButtonElement>('[data-film-btn]')!;
+    const label = root.querySelector<HTMLElement>('[data-film-label]')!;
+    // with reduced motion the film waits for a tap; otherwise it plays while on screen
+    let userPaused = !motionOK();
+    const set = (playing: boolean) => { btn.setAttribute('aria-pressed', String(playing)); label.textContent = playing ? 'Pause film' : 'Play film'; };
+    const play = () => { if (!v.src) v.src = v.dataset.src!; v.play().then(() => set(true)).catch(() => set(false)); };
+    btn.addEventListener('click', () => {
+      if (v.paused) { userPaused = false; play(); } else { userPaused = true; v.pause(); set(false); }
+    });
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !userPaused) play();
+      else if (!e.isIntersecting && !v.paused) { v.pause(); set(false); }
+    }, { threshold: 0.4 }).observe(root);
+  }
+</script>
