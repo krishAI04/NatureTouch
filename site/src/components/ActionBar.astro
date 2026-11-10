@@ -2,8 +2,8 @@
 // Phone-width action bar: the one action, always reachable, never covering content (footer pads for it).
 ---
 <nav class="actionbar" aria-label="Quick contact">
-  <a href="tel:+919993550303">Call</a>
-  <a href="https://wa.me/919993550303">WhatsApp</a>
+  <a href="tel:+919993550303"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.2c.4 0 .8.3.9.7l.9 3.3c.1.4 0 .8-.3 1L8.8 9.7a12 12 0 0 0 5.5 5.5l1.2-1.5c.3-.3.7-.4 1-.3l3.3.9c.4.1.7.5.7.9v2.2c0 .8-.6 1.5-1.5 1.5A16.4 16.4 0 0 1 3.5 5c0-.8.7-1.5 1.5-1.5h1.6Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Call</a>
+  <a href="https://wa.me/919993550303"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2a8.8 8.8 0 0 0-7.6 13.2L3.3 20.7l4.4-1.1A8.8 8.8 0 1 0 12 3.2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>WhatsApp</a>
   <a class="actionbar__main" href="/contact/">Discuss your site</a>
 </nav>
 <style>
@@ -17,10 +17,11 @@
       padding-bottom: env(safe-area-inset-bottom);
     }
     .actionbar a {
-      display: grid; place-items: center; min-height: 56px; background: var(--garden-950);
+      display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 56px; background: var(--garden-950);
       text-decoration: none; font-weight: 600; font-size: clamp(0.8rem, 3.6vw, 0.97rem);
       padding: 0 6px; text-align: center; line-height: 1.2;
     }
+    .actionbar svg { width: 18px; height: 18px; flex: none; color: var(--gold); }
     .actionbar .actionbar__main { background: var(--channel); color: var(--garden-950); }
   }
 </style>

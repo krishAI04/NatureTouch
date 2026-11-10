@@ -1,9 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
+import CallLink from '../components/CallLink.astro';
 import { company } from '../content/site';
 import marble from '../assets/textures/marble.jpg';
-const tel = (p: string) => 'tel:' + p.replace(/[^\d+]/g, '');
 const types = ['Farmhouse', 'Home or terrace', 'Township or commercial', 'Public or institutional', 'Something else'];
 ---
 <Base title="Contact" description="Discuss your site with Nature Touch in Raipur: call, WhatsApp, or send a few details and we will reply." og="contact">
@@ -13,9 +13,11 @@ const types = ['Farmhouse', 'Home or terrace', 'Township or commercial', 'Public
     <aside class="ct__direct" aria-label="Reach us directly">
       <h2>Talk to us</h2>
       <ul>
-        {company.phones.map((p) => <li><a href={tel(p)}>{p}</a></li>)}
-        <li><a href={company.whatsapp}>WhatsApp {company.phones[0]}</a></li>
-        <li><a href={`mailto:${company.email}`}>{company.email}</a></li>
+        <li><CallLink phone={company.phones[0]} size="lg" /></li>
+        <li><CallLink kind="whatsapp" size="lg" /></li>
+        <li><CallLink phone={company.phones[1]} label="Office" /></li>
+        <li><CallLink phone={company.phones[2]} label="Also on" /></li>
+        <li><a class="ct__mail" href={`mailto:${company.email}`}>{company.email}</a></li>
       </ul>
       <h2 class="ct__visit">Visit</h2>
       <p>{company.address}</p>
@@ -73,8 +75,8 @@ const types = ['Farmhouse', 'Home or terrace', 'Township or commercial', 'Public
 <style>
   .ct { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(40px, 7vw, 120px); align-items: start; padding-bottom: clamp(96px, 16vh, 180px); }
   .ct__direct h2 { font: 400 1.3rem/1.2 var(--display); color: #e9b98f; }
-  .ct__direct ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 4px; }
-  .ct__direct a { display: inline-flex; align-items: center; min-height: 44px; font: 400 var(--step-1)/1.2 var(--display); text-decoration: none; background: linear-gradient(rgb(233 201 160 / 0.6), rgb(233 201 160 / 0.6)) 0 calc(100% - 8px) / 100% 1px no-repeat; }
+  .ct__direct ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; }
+  .ct__mail { display: inline-flex; align-items: center; min-height: 44px; font: 400 var(--step-1)/1.2 var(--display); text-decoration: none; background: linear-gradient(rgb(233 201 160 / 0.6), rgb(233 201 160 / 0.6)) 0 calc(100% - 8px) / 100% 1px no-repeat; }
   .ct__visit { margin-top: 36px; }
   .ct__direct p { margin-top: 12px; max-width: 32ch; color: color-mix(in srgb, var(--marble) 84%, transparent); }
 

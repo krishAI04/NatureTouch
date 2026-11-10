@@ -1,14 +1,14 @@
 ---
 import { company } from '../../content/site';
-const tel = (p: string) => 'tel:' + p.replace(/[^\d+]/g, '');
+import CallLink from '../CallLink.astro';
 ---
 <section class="close" aria-labelledby="close-title">
   <div class="wrap close__grid">
     <h2 id="close-title">Tell us about your plot.<br />We'll tell you what it can become.</h2>
     <div class="close__actions">
       <a class="btn btn--channel close__btn" href="/contact/">Discuss your site</a>
-      <a class="close__line" href={tel(company.phones[0])}>{company.phones[0]}</a>
-      <a class="close__line" href={company.whatsapp}>WhatsApp us</a>
+      <CallLink size="lg" />
+      <CallLink kind="whatsapp" size="lg" />
       <p class="close__addr">{company.address}</p>
     </div>
   </div>
@@ -20,7 +20,6 @@ const tel = (p: string) => 'tel:' + p.replace(/[^\d+]/g, '');
   h2 { font-size: var(--step-3); max-width: 18ch; }
   .close__actions { display: grid; gap: 10px; justify-items: start; }
   .close__btn { min-height: 56px; padding: 0 30px; font-size: var(--step-0); margin-bottom: 8px; }
-  .close__line { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--step-1); text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 calc(100% - 8px) / 100% 1px no-repeat; }
   .close__addr { margin-top: 8px; font-size: var(--step--1); color: color-mix(in srgb, var(--marble) 80%, transparent); max-width: 36ch; }
   @media (max-width: 899px) { .close__grid { grid-template-columns: 1fr; } }
 </style>
