@@ -21,7 +21,7 @@ def best(slug):
 
 
 PAGES = {
-    "home": os.path.join(A, "hero", "pergola-photo.jpg"),
+    "home": os.path.join(A, "projects", "khanuj-khanna", "01.jpg"),
     "projects": os.path.join(A, "projects", "khanuj-khanna", "03.jpg"),
     "services": os.path.join(A, "projects", "signature-home", "01.jpg"),
     "nursery": os.path.join(A, "projects", "khanuj-khanna", "05.jpg"),
