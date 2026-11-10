@@ -13,50 +13,62 @@ const items = order.map((k) => ({ k, src: logos[`../../assets/clients/${k}.png`]
 <section class="proof" aria-labelledby="proof-title">
   <div class="wrap">
   <div class="proof__plaque" style={`--marble-tex:url("${marble.src}")`}>
-    <h2 id="proof-title" class="proof__title">Gardens for Raipur's institutions, developers and families</h2>
-    <div class="proof__rule" aria-hidden="true"><span class="proof__wing--l" set:html={wing} /><i></i><span set:html={wing} /></div>
+    <div class="proof__head">
+      <h2 id="proof-title" class="proof__title">Gardens for Raipur's institutions, developers and families</h2>
+      <div class="proof__rule" aria-hidden="true"><span class="proof__wing--l" set:html={wing} /><i></i><span set:html={wing} /></div>
+      <p class="proof__partner">Irrigation systems with <strong>Rain Bird</strong>, our associate.</p>
+    </div>
     <ul class="proof__logos">
       {items.map((l) => (
-        <li><Image src={l.src} alt={l.name} height={56} widths={[160, 320]} sizes="160px" class="proof__logo" /></li>
+        <li><Image src={l.src} alt={l.name} height={160} widths={[200, 400]} sizes="200px" class={`proof__logo proof__logo--${l.k}`} /></li>
       ))}
     </ul>
-    <p class="proof__partner">Irrigation systems with <strong>Rain Bird</strong>, our associate.</p>
   </div>
   </div>
 </section>
 
 <style>
-  /* the clients sit on a marble plaque set into the green, with the sandstone inlay of the service cards, so they stand out */
+  /* the clients on a marble plaque set into the green, with the sandstone inlay of the service cards; logos in their own colours */
   .proof { background: var(--garden-950); border-top: var(--channel-line); padding-block: clamp(40px, 7vh, 80px); }
   .proof__plaque {
-    display: grid; justify-items: center; gap: 22px; text-align: center; color: var(--ink);
-    padding: clamp(32px, 5vw, 64px) clamp(20px, 4vw, 56px); border-radius: 6px;
+    display: grid; gap: 24px; color: var(--ink); border-radius: 6px;
+    padding: clamp(28px, 4vw, 56px) clamp(20px, 4vw, 56px);
     background-color: var(--marble); background-image: var(--marble-tex); background-size: cover; background-position: center;
     box-shadow: inset 0 0 0 8px var(--marble), inset 0 0 0 9px color-mix(in srgb, var(--sandstone) 55%, transparent),
                 inset 0 0 0 13px var(--marble), inset 0 0 0 14px color-mix(in srgb, var(--sandstone) 30%, transparent);
   }
-  .proof__title { font-size: var(--step-2); max-width: 26ch; color: var(--garden-950); }
-  .proof__rule { display: flex; align-items: center; gap: 6px; color: var(--sandstone); margin-top: -6px; }
-  .proof__rule span { width: clamp(80px, 10vw, 130px); display: block; }
+  .proof__head { display: grid; gap: 14px; justify-items: center; text-align: center; }
+  .proof__title { font-size: clamp(1.3rem, 1.05rem + 1.1vw, 2.1rem); line-height: 1.12; max-width: 24ch; color: var(--garden-950); }
+  .proof__rule { display: flex; align-items: center; gap: 6px; color: var(--sandstone); }
+  .proof__rule span { width: clamp(70px, 9vw, 120px); display: block; }
   .proof__rule :global(svg) { display: block; width: 100%; height: auto; }
   .proof__wing--l :global(svg) { transform: scaleX(-1); }
   .proof__rule i { width: 7px; height: 7px; background: currentColor; transform: rotate(45deg); flex: none; }
-  .proof__logos {
-    list-style: none; margin: 8px 0 0; padding: 0; width: 100%;
-    display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); align-items: center;
-  }
-  /* each logo in its own bay, divided by sandstone hairlines */
-  .proof__logos li { display: grid; place-items: center; padding: 10px clamp(10px, 2vw, 24px); min-height: 84px; }
-  .proof__logos li + li { border-left: 1px solid color-mix(in srgb, var(--sandstone) 35%, transparent); }
-  /* the logo files are pale; on marble they are shown in deep ink */
-  .proof__logo { height: clamp(34px, 3.6vw, 52px); width: auto; max-width: 100%; object-fit: contain; filter: brightness(0); opacity: 0.78; transition: opacity 0.3s var(--ease-out); }
-  @media (hover: hover) and (pointer: fine) { .proof__logos li:hover .proof__logo { opacity: 1; } }
   .proof__partner { color: #4d5b52; font-size: var(--step--1); }
   .proof__partner strong { color: var(--garden-950); font-weight: 650; }
+
+  /* each logo in its own bay, divided by sandstone hairlines */
+  .proof__logos { list-style: none; margin: 0; padding: 0; display: grid; align-items: stretch; --line: 1px solid color-mix(in srgb, var(--sandstone) 35%, transparent); }
+  .proof__logos li { display: grid; place-items: center; padding: 14px clamp(10px, 2vw, 28px); min-height: 92px; }
+  .proof__logo { height: clamp(40px, 4vw, 60px); width: auto; max-width: 100%; object-fit: contain; }
+  /* tall or busy marks need more height to read at the same visual weight as the wide ones */
+  .proof__logo--nrda { height: clamp(64px, 6.4vw, 96px); }
+  .proof__logo--raipur-smart-city { height: clamp(50px, 5vw, 74px); }
+
+  /* phones and tablets: title on top, logos two to a bay row */
   @media (max-width: 899px) {
-    .proof__logos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .proof__logos li + li:nth-child(3n + 1) { border-left: 0; }
-    .proof__logos li:nth-child(n + 4) { border-top: 1px solid color-mix(in srgb, var(--sandstone) 35%, transparent); }
+    .proof__logos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .proof__logos li:nth-child(even) { border-left: var(--line); }
+    .proof__logos li:nth-child(n + 3) { border-top: var(--line); }
   }
-  @media (prefers-reduced-motion: reduce) { .proof__logo { transition: none; } }
+  /* desktop: a wide plaque, the title and Rain Bird line on the left, the six logos in a 3 × 2 grid of bays on the right */
+  @media (min-width: 900px) {
+    .proof__plaque { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); align-items: center; gap: clamp(32px, 5vw, 80px); }
+    .proof__head { justify-items: start; text-align: left; }
+    .proof__title { max-width: 18ch; }
+    .proof__logos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .proof__logos li { min-height: 120px; }
+    .proof__logos li:not(:nth-child(3n + 1)) { border-left: var(--line); }
+    .proof__logos li:nth-child(n + 4) { border-top: var(--line); }
+  }
 </style>
