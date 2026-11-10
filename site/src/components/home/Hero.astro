@@ -13,6 +13,7 @@ import { wing } from '../../lib/ornament';
     <div class="hero__layer" data-depth="0.18">
       <Image src={photo} alt="A timber pergola with a glass roof over a deck, framed by climbers and tropical planting, at the Khanuj Khanna residence in Raipur" widths={[640, 960, 1280, 1920, 2400]} sizes="100vw" loading="eager" fetchpriority="high" quality={62} class="hero__img" />
     </div>
+    <span class="hero__veil" aria-hidden="true"></span>
     <span class="hero__mount" aria-hidden="true"></span>
   </div>
 
@@ -41,6 +42,17 @@ import { wing } from '../../lib/ornament';
       radial-gradient(ellipse 48% 46% at 50% 56%, rgb(8 24 16 / 0.7), rgb(8 24 16 / 0.42) 55%, transparent 100%),
       linear-gradient(to bottom, rgb(8 24 16 / 0.55), rgb(8 24 16 / 0.12) 26%, rgb(8 24 16 / 0.28) 60%, rgb(8 24 16 / 0.9));
   }
+  /* a frosted oval behind the words only: the centre of the photo is softened and dimmed, fading out to the sharp edges,
+     so the pergola still frames the screen and every line of text reads */
+  .hero__veil {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    -webkit-backdrop-filter: blur(7px) brightness(0.82); backdrop-filter: blur(7px) brightness(0.82);
+    -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 54%, #000 45%, transparent 100%);
+    mask-image: radial-gradient(ellipse 50% 50% at 50% 54%, #000 45%, transparent 100%);
+  }
+  @media (max-width: 767px) {
+    .hero__veil { -webkit-mask-image: radial-gradient(ellipse 80% 46% at 50% 62%, #000 50%, transparent 100%); mask-image: radial-gradient(ellipse 80% 46% at 50% 62%, #000 50%, transparent 100%); }
+  }
   /* the double gold mount around the whole first screen */
   .hero__mount {
     position: absolute; z-index: 2; pointer-events: none;
@@ -55,7 +67,7 @@ import { wing } from '../../lib/ornament';
   .hero__mark { color: var(--gold); }
   .hero__mark :global(.mark) { width: 34px; height: 34px; }
   .hero__accent { margin-top: 14px; font-size: var(--step--1); letter-spacing: 0.02em; color: #f0d9b8; text-shadow: 0 1px 3px rgb(6 20 13 / 0.9), 0 0 18px rgb(6 20 13 / 0.8); }
-  .hero__accent .deva { color: var(--channel); font-size: 1.15em; }
+  .hero__accent .deva { color: var(--gold); font-size: 1.15em; }
   h1 {
     margin-top: 10px; max-width: 13ch; font-size: clamp(2.6rem, 1.4rem + 5.2vw, 6.6rem); line-height: 0.98; letter-spacing: -0.01em;
     text-shadow: 0 2px 30px rgb(6 20 13 / 0.55);
