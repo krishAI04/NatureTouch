@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import { chapters } from '../../content/site';
-import archUrl from '../../assets/svg/arch.svg?url';
 import marble from '../../assets/textures/marble.jpg';
 const s = import.meta.glob<{ default: ImageMetadata }>('../../assets/stickers/*.png', { eager: true });
 const st = (n: string) => s[`../../assets/stickers/${n}.png`].default;
@@ -39,14 +38,10 @@ const view: Record<string, { src: ImageMetadata; alt: string; pos: string }> = {
     </div>
     <ol class="svc__chapters">
       {chapters.map((c) => (
-        <li class={`svc__card n-${c.services.length}`} id={c.id} style={`--arch:url("${archUrl}");--marble-tex:url("${marble.src}")`}>
-          <div class="svc__facade">
-          <span class="svc__wing svc__wing--l" set:html={wing} />
-          <div class="svc__niche">
-            <Image src={view[c.id].src} alt={view[c.id].alt} widths={[320, 520]} sizes="220px" class="svc__view" style={`object-position:${view[c.id].pos}`} loading="lazy" />
-          </div>
-          <span class="svc__wing" set:html={wing} />
-          </div>
+        <li class={`svc__card n-${c.services.length}`} id={c.id} style={`--marble-tex:url("${marble.src}")`}>
+          <figure class="svc__photo">
+            <Image src={view[c.id].src} alt={view[c.id].alt} widths={[480, 800, 1200]} sizes="(min-width: 900px) 620px, 88vw" quality={68} class="svc__view" style={`object-position:${view[c.id].pos}`} loading="lazy" />
+          </figure>
           <h3>{c.title}</h3>
           <div class="svc__rule" aria-hidden="true"><span set:html={wing} class="svc__wing--l" /><i></i><span set:html={wing} /></div>
           <ul class="svc__list">
@@ -81,22 +76,16 @@ const view: Record<string, { src: ImageMetadata; alt: string; pos: string }> = {
                 0 30px 60px -30px rgb(0 0 0 / 0.6);
   }
   .svc__card:nth-child(even) { margin-left: auto; }
-  /* a jharokha: a sandstone-framed arch window inside the marble, looking onto real work */
-  .svc__niche {
-    position: relative; flex: none; width: clamp(170px, 30vw, 230px); aspect-ratio: 100 / 118;
-    background-color: var(--sandstone); padding: 5px;
-    -webkit-mask-image: var(--arch); mask-image: var(--arch);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  /* the work itself, large: a plain rectangle in a sandstone frame with a gold hairline inside, like a mounted painting */
+  .svc__photo {
+    position: relative; margin: clamp(22px, 2.6vw, 30px) 0 0; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 2px;
+    border: 4px solid var(--sandstone); box-shadow: 0 14px 30px -18px rgb(40 16 10 / 0.6);
   }
-  .svc__view {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    -webkit-mask-image: var(--arch); mask-image: var(--arch);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  .svc__photo::after {
+    content: ''; position: absolute; inset: 8px; pointer-events: none; border: 1px solid rgb(240 217 184 / 0.75);
   }
-  /* the photo window with calligraphic flourishes reaching out from its sides, and a matching rule under the title */
-  .svc__facade { display: flex; justify-content: center; align-items: end; margin-top: clamp(26px, 3vw, 36px); }
+  .svc__view { width: 100%; height: 100%; object-fit: cover; display: block; }
   .svc__wing { color: var(--sandstone); display: block; flex: none; }
-  .svc__facade .svc__wing { width: clamp(90px, 13vw, 160px); margin-bottom: 20%; margin-inline: 8px; }
   .svc__wing :global(svg) { display: block; width: 100%; height: auto; }
   .svc__wing--l :global(svg) { transform: scaleX(-1); }
   .svc__rule { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 10px; color: var(--sandstone); }
@@ -127,8 +116,7 @@ const view: Record<string, { src: ImageMetadata; alt: string; pos: string }> = {
   @media (max-width: 899px) {
     .svc__sticker { width: calc(var(--w) * 2.2vw); }
     .svc__card:nth-child(even) { margin-left: 0; }
-    .svc__niche { width: min(46vw, 190px); }
-    .svc__facade .svc__wing { width: min(17vw, 80px); margin-inline: 4px; }
+    .svc__photo { aspect-ratio: 4 / 3; border-width: 3px; }
     .svc__list { grid-template-columns: 1fr; }
     .svc__list li:not(.svc__pool) { border-right: 0 !important; border-top: 2px solid var(--channel); text-align: left; }
     .svc__list li:first-child { border-top: 0; }
