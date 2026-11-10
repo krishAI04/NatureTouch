@@ -1,16 +1,28 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import photo from '../../assets/hero/pergola-photo.jpg';
+import walkM from '../../assets/hero/garden-walk-m.jpg';
 import front from '../../assets/hero/pergola-front.png';
-import { company } from '../../content/site';
+import CallLink from '../CallLink.astro';
+// phones get their own photo: the Khanuj Khanna palm walk, a tall view that reads at phone size
+// (the pergola needs a wide frame; cropped tall it is mostly hanging fans). Upscaled crop, see CREATIVE-LOG.
+const phone = await getImage({ src: walkM, widths: [600, 900, 1200], format: 'webp', quality: 60 });
+// a 1×1 blank, so phones never download the pergola cut-out layer they don't show
+const blank = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 ---
 <section class="hero" data-hero data-dark-hero aria-labelledby="hero-title">
   <div class="hero__stage" data-hero-stage>
     <div class="hero__layer hero__layer--back" data-depth="0.25">
-      <Image src={photo} alt="A timber pergola with a glass roof over a deck, framed by climbers and tropical planting, at the Khanuj Khanna residence in Raipur" widths={[800, 1280, 1920]} sizes="100vw" loading="eager" fetchpriority="high" quality={55} class="hero__img" />
+      <picture>
+        <source media="(max-width: 767px)" srcset={phone.srcSet.attribute} sizes="100vw" type="image/webp" />
+        <Image src={photo} alt="A garden by Nature Touch at the Khanuj Khanna residence in Raipur: a timber pergola on wide screens, a palm-lined spiral walk on phones" widths={[800, 1280, 1920]} sizes="100vw" loading="eager" fetchpriority="high" quality={55} class="hero__img" />
+      </picture>
     </div>
     <div class="hero__layer" data-depth="0.25">
-      <Image src={front} alt="" widths={[800, 1280, 1920, 2400]} sizes="100vw" loading="eager" class="hero__img hero__front" />
+      <picture>
+        <source media="(max-width: 767px)" srcset={blank} />
+        <Image src={front} alt="" widths={[800, 1280, 1920, 2400]} sizes="100vw" loading="eager" class="hero__img hero__front" />
+      </picture>
     </div>
     <p class="hero__big" aria-hidden="true" data-depth="0.5">Go Green</p>
   </div>
@@ -23,8 +35,8 @@ import { company } from '../../content/site';
     </div>
     <div class="hero__actions">
       <a class="btn btn--channel" href="/contact/">Discuss your site</a>
-      <a class="link" href={`tel:${company.phones[0].replace(/\s/g, '')}`}>{company.phones[0]}</a>
-      <a class="link hero__wa" href={company.whatsapp}>WhatsApp</a>
+      <CallLink />
+      <CallLink kind="whatsapp" class="hero__wa" />
     </div>
   </div>
 </section>
@@ -58,6 +70,7 @@ import { company } from '../../content/site';
   .hero__lede { margin-top: 10px; max-width: 58ch; color: var(--marble); text-shadow: 0 1px 14px rgb(6 20 13 / 0.7); }
   .hero__text h1 { text-shadow: 0 2px 24px rgb(6 20 13 / 0.5); }
   .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+  .hero__actions :global(.hero__wa) { display: inline-flex; }
 
   @media (max-width: 899px) {
     .hero__course { grid-template-columns: 1fr; }
@@ -67,7 +80,10 @@ import { company } from '../../content/site';
   }
   /* phones: the fixed action bar carries "Discuss your site", so the hero keeps only the phone link */
   @media (max-width: 767px) {
-    .hero__actions .btn, .hero__wa { display: none; }
+    /* the palm walk, sharp and lit; no pergola layer, so no depth blur */
+    .hero__layer--back :global(img) { filter: brightness(0.78) saturate(1.05); object-position: 50% 55%; }
+    .hero__layer:not(.hero__layer--back) { display: none; }
+    .hero__actions .btn, .hero__actions :global(.hero__wa) { display: none; }
     .hero__lede { font-size: var(--step--1); }
     .hero__course { padding-bottom: 80px; }
   }
