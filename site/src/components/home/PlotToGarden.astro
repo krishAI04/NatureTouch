@@ -71,6 +71,8 @@ const stages = [
   .ptg__canvas :global(.ptg__plan) { position: absolute; inset: 0; width: 100%; height: 100%; stroke: #f0d3a8; filter: drop-shadow(0 0 1.5px rgb(30 14 8 / 0.85)) drop-shadow(0 0 8px rgb(10 32 22 / 0.5)); }
   /* the bare plot is muted so colour floods back when the garden grows over it; the plan is drawn in pale sandstone, one plan colour site-wide */
   .ptg__canvas > :global(.ptg__img) { filter: saturate(0.4) brightness(0.92); }
+  /* phones: no shadow filter on the animated plan; it was redrawn on every scroll frame */
+  @media (pointer: coarse), (max-width: 899px) { .ptg__canvas :global(.ptg__plan) { filter: none; } }
   .ptg__canvas :global(.ptg__plan *) { stroke-dasharray: 1; stroke-dashoffset: 0; vector-effect: non-scaling-stroke; }
 
   /* title and stages float over a soft fade at the top; facts over one at the bottom */
@@ -130,7 +132,7 @@ const stages = [
 </style>
 
 <script>
-  import { motionOK, gsap } from '../../lib/motion';
+  import { motionOK, gsap, pinTypeFor } from '../../lib/motion';
   const root = document.querySelector<HTMLElement>('[data-ptg]');
   if (root) {
     const index = [...root.querySelectorAll('[data-ptg-index] li')];
@@ -150,7 +152,7 @@ const stages = [
         defaults: { ease: 'none' },
         scrollTrigger: {
           trigger: root, start: 'top top', end: () => '+=' + window.innerHeight * 2.4,
-          pin: '[data-ptg-pin]', pinType: 'transform', scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+          pin: '[data-ptg-pin]', pinType: pinTypeFor(), scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
         },
       });
       // explicit from/to values: invalidateOnRefresh re-reads start values, so .to() could start from an end state

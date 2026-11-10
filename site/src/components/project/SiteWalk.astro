@@ -69,7 +69,7 @@ const { photos, name, plants } = Astro.props;
 </style>
 
 <script>
-  import { motionOK, gsap } from '../../lib/motion';
+  import { motionOK, gsap, pinTypeFor } from '../../lib/motion';
   const root = document.querySelector<HTMLElement>('[data-walk]');
   if (root) {
     const track = root.querySelector<HTMLElement>('[data-walk-track]')!;
@@ -88,7 +88,7 @@ const { photos, name, plants } = Astro.props;
         defaults: { ease: 'none' },
         scrollTrigger: {
           trigger: root, start: 'top top', end: () => '+=' + Math.min(dist(), window.innerHeight * 2.5),
-          pin: '[data-walk-pin]', pinType: 'transform', scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+          pin: '[data-walk-pin]', pinType: pinTypeFor(), scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
         },
       });
       tl.fromTo(track, { x: 0 }, { x: () => -dist() }, 0)
