@@ -1,0 +1,59 @@
+---
+// The homepage gateway's logic (markup and styles in Preloader.astro). Plain inline JS at the end of the page:
+// it runs as soon as the HTML is parsed, without waiting for the GSAP/Lenis bundle, so progress shows from the start.
+---
+<script is:inline>
+  (function () {
+    var html = document.documentElement;
+    var root = document.querySelector('[data-pl]');
+    if (!root || !html.classList.contains('pl-wait')) return;
+    var quick = html.classList.contains('pl-quick');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var MIN = quick ? 350 : 1800;  // long enough to read as a gateway; near instant on a repeat visit
+    var MAX = 9000;                 // from the start of navigation: on a very slow network the page opens anyway
+    var bar = root.querySelector('[data-pl-bar]');
+    var num = root.querySelector('[data-pl-num]');
+
+    // what the first scenes need: hero layers, the plot-to-garden photos, the featured project panels
+    var imgs = [].slice.call(document.querySelectorAll('.hero__img, .ptg__img, .feat__img'));
+    // the hero is what opens behind the gate, so its two layers count most; then the fonts; then the scenes below
+    var weight = function (img) { return img.classList.contains('hero__img') ? 4 : 1; };
+    var done = 0, total = 2;  // fonts
+    imgs.forEach(function (img) { total += weight(img); });
+    imgs.forEach(function (img) {
+      var tick = function () { done += weight(img); };
+      img.loading = 'eager'; // lazy images below the fold would otherwise never start
+      var ready = function () { (img.decode ? img.decode() : Promise.resolve()).catch(function () {}).then(tick); };
+      if (img.complete && img.naturalWidth) ready();
+      else { img.addEventListener('load', ready, { once: true }); img.addEventListener('error', tick, { once: true }); }
+    });
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(function () { done += 2; });
+
+    // the shown progress eases toward the real one, so it never jumps
+    var shown = 0, finished = false;
+    function loop() {
+      var elapsed = performance.now();
+      var target = elapsed > MAX ? 1 : Math.min(done / total, Math.min(1, elapsed / MIN));
+      shown += (target - shown) * (quick ? 0.35 : 0.1);
+      if (target - shown < 0.004) shown = target;
+      root.style.setProperty('--draw', String(1 - shown));
+      bar.style.transform = 'scaleX(' + shown + ')';
+      num.textContent = String(Math.round(shown * 100));
+      if (shown >= 1 && !finished) { finished = true; open(); return; }
+      setTimeout(loop, 16);
+    }
+    // a timer, not requestAnimationFrame: rAF stops in tabs that aren't drawing, which would hold the gate shut
+    loop();
+
+    function open() {
+      try { sessionStorage.setItem('nt-gate', '1'); } catch (e) {}
+      root.classList.add('is-opening', 'is-sealed');      // the pool fills
+      setTimeout(function () {
+        root.classList.add('is-open');                     // the seal fades and the doors part
+        html.classList.remove('pl-wait');                  // the hero entrance starts as the gate opens
+        window.dispatchEvent(new Event('nt:gate-open'));   // motion.ts restarts Lenis and re-measures pins
+        setTimeout(function () { root.remove(); }, reduce ? 350 : 1250);
+      }, reduce ? 0 : 600);
+    }
+  })();
+</script>

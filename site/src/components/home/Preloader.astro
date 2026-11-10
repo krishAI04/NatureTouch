@@ -1,0 +1,103 @@
+---
+// The homepage gateway. It holds the page until the images the first scenes need (hero, plot-to-garden,
+// featured projects) and the fonts are ready, so nothing shows half-loaded or as alt text.
+// The char-bagh mark draws itself as loading progresses; at 100% the pool fills and the gate opens onto the hero.
+// Safety: no JS = no gateway (html.pl-wait is never set); JS that fails = a CSS fail-safe lifts it after 12 s.
+// Its logic is PreloaderScript.astro, an inline script at the end of the page, so it never waits on the motion bundle.
+import { wing } from '../../lib/ornament';
+---
+<script is:inline>
+  // set before the hero paints: hide scrolling, pause the hero entrance, and note a repeat visit for a faster gate
+  (function () {
+    var d = document.documentElement;
+    d.classList.add('pl-wait');
+    // a fresh load or reload opens the gate onto the hero, not wherever the page was left; Back keeps its place
+    try {
+      var nav = performance.getEntriesByType('navigation')[0];
+      if (!location.hash && (!nav || nav.type !== 'back_forward')) { history.scrollRestoration = 'manual'; window.scrollTo(0, 0); }
+    } catch (e) {}
+    try { if (sessionStorage.getItem('nt-gate')) d.classList.add('pl-quick'); } catch (e) {}
+    setTimeout(function () { d.classList.remove('pl-wait'); }, 12000);
+  })();
+</script>
+
+<div class="pl" data-pl role="status" aria-live="polite" aria-label="Loading Nature Touch">
+  <div class="pl__door pl__door--l" aria-hidden="true"></div>
+  <div class="pl__door pl__door--r" aria-hidden="true"></div>
+  <div class="pl__seal" data-pl-seal>
+    <svg class="pl__mark" viewBox="0 0 120 120" aria-hidden="true">
+      <rect class="pl__wall" x="6" y="6" width="108" height="108" rx="2" pathLength="1" />
+      <rect class="pl__wall pl__wall--in" x="14" y="14" width="92" height="92" rx="1" pathLength="1" />
+      <path class="pl__ch" d="M60 14V48M60 72V106M14 60H48M72 60H106" pathLength="1" />
+      <rect class="pl__pool" x="48" y="48" width="24" height="24" rx="1" />
+      <rect class="pl__pool-fill" data-pl-pool x="48" y="48" width="24" height="24" rx="1" />
+    </svg>
+    <p class="pl__name" translate="no">Nature Touch</p>
+    <div class="pl__rule" aria-hidden="true">
+      <span class="pl__wing pl__wing--l" set:html={wing} />
+      <span class="pl__track"><i data-pl-bar></i></span>
+      <span class="pl__wing" set:html={wing} />
+    </div>
+    <p class="pl__count" aria-hidden="true"><span data-pl-num>0</span></p>
+  </div>
+</div>
+
+<style>
+  .pl { display: none; }
+  :global(html.pl-wait) { overflow: hidden; }
+  :global(html.pl-wait) .pl, .pl.is-opening {
+    position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; pointer-events: auto;
+    animation: pl-failsafe 0.4s 12s forwards;
+  }
+  @keyframes pl-failsafe { to { opacity: 0; visibility: hidden; } }
+
+  /* two doors of deep garden green; they part to open onto the hero */
+  .pl__door { position: absolute; top: 0; bottom: 0; width: 50.5%; background: var(--garden-950); }
+  .pl__door--l { left: 0; }
+  .pl__door--r { right: 0; }
+
+  .pl__seal { position: relative; z-index: 1; display: grid; justify-items: center; gap: 18px; color: var(--marble); }
+  .pl__mark { width: clamp(84px, 16vw, 112px); height: auto; overflow: visible; }
+  .pl__wall, .pl__ch { fill: none; stroke: var(--gold); stroke-dasharray: 1 1.05; stroke-dashoffset: var(--draw, 1); }
+  .pl__wall { stroke-width: 1.6; }
+  .pl__wall--in { stroke-width: 0.8; opacity: 0.55; }
+  .pl__ch { stroke: var(--channel); stroke-width: 2; }
+  .pl__pool { fill: none; stroke: var(--channel); stroke-width: 1.4; opacity: 0.6; }
+  .pl__pool-fill {
+    fill: var(--channel); opacity: 0; transform: scale(0.2); transform-box: fill-box; transform-origin: 50% 50%;
+    transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
+  }
+  /* the gate's three beats, driven by PreloaderScript.astro: seal (pool fills) → open (seal fades, doors part) */
+  .pl.is-sealed .pl__pool-fill { opacity: 1; transform: none; }
+  .pl__seal { transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out); }
+  .pl.is-open .pl__seal { opacity: 0; transform: translateY(-8px); }
+  .pl__door { transition: transform 1s var(--ease-in-out) 0.1s; }
+  .pl.is-open .pl__door--l { transform: translateX(-100%); }
+  .pl.is-open .pl__door--r { transform: translateX(100%); }
+  @media (prefers-reduced-motion: reduce) {
+    .pl { transition: opacity 0.3s ease; }
+    .pl.is-open { opacity: 0; }
+    .pl.is-open .pl__door--l, .pl.is-open .pl__door--r { transform: none; }
+  }
+  .pl__name { font: 400 clamp(1.5rem, 5vw, 2rem)/1 var(--display); letter-spacing: 0.01em; }
+  .pl__rule { display: flex; align-items: center; gap: 8px; color: var(--sandstone-soft); }
+  .pl__wing { width: clamp(56px, 12vw, 84px); display: block; }
+  .pl__wing :global(svg) { display: block; width: 100%; height: auto; }
+  .pl__wing--l :global(svg) { transform: scaleX(-1); }
+  .pl__track { position: relative; overflow: hidden; width: clamp(90px, 22vw, 150px); height: 1px; background: rgb(233 201 160 / 0.22); }
+  .pl__track i { position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: 50% 50%; }
+  .pl__count { font: 400 0.95rem/1 var(--display); color: var(--gold); min-width: 3ch; text-align: center; font-variant-numeric: tabular-nums; }
+
+  /* entrance of the seal itself */
+  @media (prefers-reduced-motion: no-preference) {
+    .pl__seal { animation: pl-in 0.7s cubic-bezier(0.23, 1, 0.32, 1) both; }
+  }
+  @keyframes pl-in { from { opacity: 0; transform: translateY(10px); } }
+  /* alive from the first paint, before any script arrives: the pool breathes and the gold line shimmers */
+  @media (prefers-reduced-motion: no-preference) {
+    .pl__pool { animation: pl-breathe 1.6s ease-in-out infinite; }
+    .pl__track::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgb(233 201 160 / 0.55), transparent); animation: pl-shimmer 1.8s ease-in-out infinite; }
+  }
+  @keyframes pl-breathe { 50% { opacity: 0.15; } }
+  @keyframes pl-shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+</style>

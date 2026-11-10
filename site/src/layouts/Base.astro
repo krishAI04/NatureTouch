@@ -9,11 +9,14 @@ const { title, description, og = 'home' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(`/og/${og}.jpg`, Astro.site);
 const full = title === 'Nature Touch' ? 'Nature Touch — Landscape design and build, Raipur' : `${title} — Nature Touch`;
+// the display face is preloaded so headings (and the homepage gateway) never flash in a fallback serif
+import gloockUrl from '@fontsource/gloock/files/gloock-latin-400-normal.woff2?url';
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <link rel="preload" as="font" type="font/woff2" href={gloockUrl} crossorigin />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{full}</title>
     <meta name="description" content={description} />

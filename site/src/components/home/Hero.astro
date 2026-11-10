@@ -79,6 +79,8 @@ import { company } from '../../content/site';
     .hero__front { animation: lift 1.2s cubic-bezier(0.23, 1, 0.32, 1) 0.2s both; }
     .hero__course { animation: fade 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.7s both; }
   }
+  /* the homepage gateway holds the entrance until the page is ready (see Preloader.astro) */
+  :global(html.pl-wait) .hero__stage, :global(html.pl-wait) .hero__big, :global(html.pl-wait) .hero__front, :global(html.pl-wait) .hero__course { animation-play-state: paused; }
   @keyframes horizon { from { clip-path: inset(46% 0 46% 0); } to { clip-path: inset(0 0 0 0); } }
   @keyframes rise { from { transform: translateY(18%); opacity: 0.2; } }
   @keyframes lift { from { transform: translateY(14px); } }

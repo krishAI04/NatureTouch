@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+import Preloader from '../components/home/Preloader.astro';
+import PreloaderScript from '../components/home/PreloaderScript.astro';
 import Hero from '../components/home/Hero.astro';
 import PlotToGarden from '../components/home/PlotToGarden.astro';
 import ProofStrip from '../components/home/ProofStrip.astro';
@@ -10,6 +12,7 @@ import ProjectIndex from '../components/home/ProjectIndex.astro';
 import Closing from '../components/home/Closing.astro';
 ---
 <Base title="Nature Touch" description="Landscape design and build in Raipur, Chhattisgarh: gardens, water features, pools, irrigation, lighting and outdoor structures.">
+  <Preloader />
   <Hero />
   <PlotToGarden />
   <ProofStrip />
@@ -18,4 +21,5 @@ import Closing from '../components/home/Closing.astro';
   <NurseryTeaser />
   <ProjectIndex />
   <Closing />
+  <PreloaderScript />
 </Base>

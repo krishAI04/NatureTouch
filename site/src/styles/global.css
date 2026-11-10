@@ -42,6 +42,8 @@
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--bar-h) + 12px); }
 html, body { overflow-x: clip; }
+/* a slow or failed photo shows the ground colour behind it, never its alt text (screen readers still read the alt) */
+img { color: transparent; }
 body {
   margin: 0; min-height: 100svh;
   background: var(--garden-900); color: var(--marble);
