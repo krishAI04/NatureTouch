@@ -1,12 +1,12 @@
 ---
 import { Image, getImage } from 'astro:assets';
 import photo from '../../assets/projects/khanuj-khanna/01.jpg';
-import walkM from '../../assets/hero/garden-walk-m.jpg';
+import lawnM from '../../assets/hero/lawn-m.jpg';
 import CallLink from '../CallLink.astro';
 import Mark from '../Mark.astro';
 import { wing } from '../../lib/ornament';
-// phones get their own photo: the Khanuj Khanna palm walk, a tall view that reads at phone size (upscaled crop)
-const phone = await getImage({ src: walkM, widths: [600, 900, 1200], format: 'webp', quality: 62 });
+// phones get their own photo: the Vinay Bajaj farmhouse lawn, a tall crop whose calm lawn sits behind the words
+const phone = await getImage({ src: lawnM, widths: [600, 900, 1200], format: 'webp', quality: 62 });
 // One sharp, full-colour photo on every screen (the Khanuj Khanna pergola), set inside a double gold mount
 // like a court painting. The words sit centred over it: the char-bagh mark, the title, the wing rule, one line, the actions.
 // (The project pages also centre their title; the mount, the mark and the actions are what make this the front door.)
@@ -16,7 +16,7 @@ const phone = await getImage({ src: walkM, widths: [600, 900, 1200], format: 'we
     <div class="hero__layer" data-depth="0.18">
       <picture>
         <source media="(max-width: 767px)" srcset={phone.srcSet.attribute} sizes="100vw" type="image/webp" />
-        <Image src={photo} alt="A garden by Nature Touch at the Khanuj Khanna residence in Raipur: a timber pergola over a deck on wide screens, a palm-lined spiral walk on phones" widths={[960, 1280, 1920, 2400]} sizes="100vw" loading="eager" fetchpriority="high" quality={62} class="hero__img" />
+        <Image src={photo} alt="A garden by Nature Touch at the Khanuj Khanna residence in Raipur: a timber pergola over a deck on wide screens; on phones, the Vinay Bajaj farmhouse lawn, pool and palms" widths={[960, 1280, 1920, 2400]} sizes="100vw" loading="eager" fetchpriority="high" quality={62} class="hero__img" />
       </picture>
     </div>
     <span class="hero__veil" aria-hidden="true"></span>
@@ -61,7 +61,7 @@ const phone = await getImage({ src: walkM, widths: [600, 900, 1200], format: 'we
   @media (max-width: 767px) {
     .hero__veil { display: none; }
     .hero__stage::after {
-      background: linear-gradient(to bottom, rgb(8 24 16 / 0.5), rgb(8 24 16 / 0) 18%, rgb(8 24 16 / 0) 26%, rgb(8 24 16 / 0.66) 46%, rgb(8 24 16 / 0.93) 72%);
+      background: linear-gradient(to bottom, rgb(8 24 16 / 0.5), rgb(8 24 16 / 0) 18%, rgb(8 24 16 / 0) 38%, rgb(8 24 16 / 0.5) 58%, rgb(8 24 16 / 0.8) 84%);
     }
   }
   /* the double gold mount around the whole first screen */
@@ -94,7 +94,7 @@ const phone = await getImage({ src: walkM, widths: [600, 900, 1200], format: 'we
 
   /* phones: the fixed action bar carries "Discuss your site", so the hero keeps the call button */
   @media (max-width: 767px) {
-    .hero__img { object-position: 50% 45%; }
+    .hero__img { object-position: 60% 50%; }
     .hero__course { bottom: calc(56px + 28px); }
     .hero__lede { font-size: var(--step--1); max-width: 34ch; }
     .hero__btn { display: none; }
