@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4">
+  <!-- Tileable Mughal jaali: an eight-point star (two squares) inside a square lattice. -->
+  <rect x="12" y="12" width="24" height="24" />
+  <rect x="12" y="12" width="24" height="24" transform="rotate(45 24 24)" />
+  <path d="M0 0 L12 12 M48 0 L36 12 M0 48 L12 36 M48 48 L36 36" />
+  <circle cx="24" cy="24" r="4" />
+</svg>

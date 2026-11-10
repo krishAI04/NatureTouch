@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 1024" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Illustrative plan traced over the Vinay Bajaj farmhouse aerial (same 1536x1024 frame as the photos). -->
+  <g class="plan-walls" stroke-width="5">
+    <path d="M10 472 L575 352 M900 330 L1495 410 L1060 1000 L670 830 M530 786 L10 532" />
+  </g>
+  <g class="plan-house" stroke-width="3">
+    <path d="M580 268 H880 V380 H580 Z M580 340 Q640 330 700 340" />
+  </g>
+  <g class="plan-paths" stroke-width="4">
+    <path d="M450 640 C540 652 640 655 760 640 S900 612 1000 606 S1250 602 1330 580 C1345 545 1270 515 1150 472 S1085 440 1080 428" />
+    <path d="M360 632 C360 590 385 545 440 482 C470 452 480 470 465 520 C452 562 430 590 440 612" />
+    <path d="M618 410 Q720 432 832 418" />
+  </g>
+  <g class="plan-lawn" stroke-width="3">
+    <ellipse cx="760" cy="500" rx="212" ry="90" />
+  </g>
+  <g class="plan-water" stroke-width="3">
+    <ellipse cx="1015" cy="412" rx="96" ry="30" />
+    <ellipse cx="1062" cy="832" rx="88" ry="48" />
+  </g>
+  <g class="plan-court" stroke-width="3">
+    <path d="M700 690 L1040 640 L1150 760 L840 802 L602 790 Z" />
+  </g>
+  <g class="plan-trees" stroke-width="2.5">
+    <circle cx="845" cy="495" r="16" /><circle cx="935" cy="490" r="16" /><circle cx="1150" cy="530" r="14" />
+    <circle cx="600" cy="560" r="14" /><circle cx="470" cy="500" r="12" /><circle cx="930" cy="690" r="12" />
+  </g>
+</svg>
