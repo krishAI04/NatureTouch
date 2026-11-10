@@ -1,0 +1,48 @@
+# --- Generated and caches ---
+node_modules/
+dist/
+.astro/
+__pycache__/
+*.pyc
+*.log
+.cache/
+tmp/
+
+# --- Docs stay out of git (front page re-included) ---
+/docs/
+*.md
+!README.md
+*.pdf
+*.docx
+
+# --- AI and tool working files ---
+.claude/
+CLAUDE.md
+AGENTS.md
+.impeccable/
+.taste-skill/
+graphify-out/
+.superpowers/
+
+# --- Research, review shots and source material (kept on disk, not in the repo) ---
+/research/
+/shots/
+/assets/
+
+# --- Large downloaded model for tools/upscale.py (Real-ESRGAN x4plus ONNX, fetch again if needed) ---
+/tools/models/
+
+# --- Secrets and local config ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- OS and editor junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
